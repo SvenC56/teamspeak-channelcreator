@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+
+# Dist
+dist/
+
+# Logs
+logs/
+
+# Database
+db/*.db
+
+.env
+
+.env.example
