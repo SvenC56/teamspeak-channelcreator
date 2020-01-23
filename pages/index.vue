@@ -3,8 +3,9 @@
     <h1 class="display-1 mb-5">TeamSpeak Channel Creator</h1>
     <v-data-table
       :headers="headers"
-      :items="desserts"
-      sort-by="calories"
+      :items="channelSync"
+      :loading="loading"
+      sort-by="parent"
       class="elevation-1"
     >
       <template v-slot:top>
@@ -24,35 +25,73 @@
               <v-card-text>
                 <v-container>
                   <v-row>
-                    <v-col cols="12" sm="6" md="4">
+                    <v-col cols="12">
+                      <v-select
+                        v-model="editedItem.parent"
+                        :items="channels"
+                        item-text="channel_name"
+                        item-value="cid"
+                        label="Parent Channel"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12">
                       <v-text-field
-                        v-model="editedItem.name"
-                        label="Dessert name"
+                        v-model="editedItem.prefix"
+                        label="Prefix for channel"
                       ></v-text-field>
                     </v-col>
-                    <v-col cols="12" sm="6" md="4">
+                    <v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="editedItem.calories"
-                        label="Calories"
+                        v-model="editedItem.minChannel"
+                        type="number"
+                        label="Min. number of channels"
                       ></v-text-field>
                     </v-col>
-                    <v-col cols="12" sm="6" md="4">
+                    <v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="editedItem.fat"
-                        label="Fat (g)"
+                        v-model="editedItem.maxUsers"
+                        type="number"
+                        label="Max. number of users in the channel"
                       ></v-text-field>
                     </v-col>
-                    <v-col cols="12" sm="6" md="4">
+                    <v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="editedItem.carbs"
-                        label="Carbs (g)"
+                        v-model="editedItem.joinPower"
+                        type="number"
+                        label="Required join power"
                       ></v-text-field>
                     </v-col>
-                    <v-col cols="12" sm="6" md="4">
+                    <v-col cols="12" sm="12" md="12">
+                      <v-select
+                        v-model="editedItem.codec"
+                        :items="codecs"
+                        item-text="key"
+                        item-value="value"
+                        label="Audio codec"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-subheader>Voice Quality</v-subheader>
+                      <v-slider
+                        v-model="editedItem.quality"
+                        step="1"
+                        ticks="always"
+                        max="10"
+                        thumb-label
+                        tick-size="4"
+                      ></v-slider>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
                       <v-text-field
-                        v-model="editedItem.protein"
-                        label="Protein (g)"
+                        v-model="editedItem.topic"
+                        label="The channel's topic"
                       ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                      <v-textarea
+                        v-model="editedItem.description"
+                        label="The channel's description"
+                      ></v-textarea>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -76,7 +115,10 @@
         </v-icon>
       </template>
       <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">Reset</v-btn>
+        No Data
+      </template>
+      <template v-slot:item.parent="{ item }">
+        {{ getChannelById(item.parent).channel_name }}
       </template>
     </v-data-table>
   </v-container>
@@ -88,35 +130,51 @@ export default {
 
   data: () => ({
     dialog: false,
+    loading: true,
+    channels: [],
+    channelSync: [],
     headers: [
-      {
-        text: 'Dessert (100g serving)',
-        align: 'left',
-        sortable: false,
-        value: 'name'
-      },
-      { text: 'Calories', value: 'calories' },
-      { text: 'Fat (g)', value: 'fat' },
-      { text: 'Carbs (g)', value: 'carbs' },
-      { text: 'Protein (g)', value: 'protein' },
+      { text: 'Parent Channel', value: 'parent' },
+      { text: 'Prefix', value: 'prefix' },
+      { text: 'Min. Channels', value: 'minChannel' },
+      { text: 'Max. Users', value: 'maxUsers' },
+      { text: 'Codec', value: 'codec' },
+      { text: 'Codec Quality', value: 'quality' },
+      { text: 'Join Power', value: 'joinPower' },
       { text: 'Actions', value: 'action', sortable: false }
     ],
-    desserts: [],
     editedIndex: -1,
     editedItem: {
-      name: '',
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0
+      id: '',
+      parent: '',
+      prefix: '',
+      minChannel: 0,
+      maxUsers: 0,
+      codec: 4,
+      quality: 5,
+      joinPower: 0,
+      topic: '',
+      description: ''
     },
     defaultItem: {
-      name: '',
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0
-    }
+      parent: '',
+      prefix: '',
+      minChannel: 0,
+      maxUsers: 0,
+      codec: 4,
+      quality: 5,
+      joinPower: 0,
+      topic: '',
+      description: ''
+    },
+    codecs: [
+      { key: 'Speex Schmalband', value: 0 },
+      { key: 'Speex Breitband', value: 1 },
+      { key: 'Speex Ultra-Breitband', value: 2 },
+      { key: 'CELT Mono', value: 3 },
+      { key: 'Opus Voice', value: 4 },
+      { key: 'Opus Music', value: 5 }
+    ]
   }),
 
   computed: {
@@ -131,96 +189,47 @@ export default {
     }
   },
 
-  created() {
-    this.initialize()
+  async created() {
+    this.channelSync = await this.getChannelSync()
+    this.channels = await this.getChannels()
+    this.loading = false
   },
 
   methods: {
-    initialize() {
-      this.desserts = [
-        {
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0
-        },
-        {
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3
-        },
-        {
-          name: 'Eclair',
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0
-        },
-        {
-          name: 'Cupcake',
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3
-        },
-        {
-          name: 'Gingerbread',
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9
-        },
-        {
-          name: 'Jelly bean',
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0
-        },
-        {
-          name: 'Lollipop',
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0
-        },
-        {
-          name: 'Honeycomb',
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5
-        },
-        {
-          name: 'Donut',
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9
-        },
-        {
-          name: 'KitKat',
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7
-        }
-      ]
+    getChannelById(cid) {
+      const channel = this.channels.find((x) => x.cid === cid)
+      if (channel && channel.cid) {
+        return channel
+      }
+      return cid
     },
-
+    async getChannelSync() {
+      const channelSync = await this.$axios.$get('/api/channelsync')
+      return channelSync
+    },
+    async getChannels() {
+      const channels = await this.$axios.$get('/api/teamspeak/channels')
+      return channels
+    },
     editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item)
+      this.editedIndex = this.channelSync.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
     },
 
-    deleteItem(item) {
-      const index = this.desserts.indexOf(item)
-      confirm('Are you sure you want to delete this item?') &&
-        this.desserts.splice(index, 1)
+    async deleteItem(item) {
+      const index = this.channelSync.indexOf(item)
+      const isConfirmed = confirm('Are you sure you want to delete this item?')
+      if (isConfirmed) {
+        try {
+          await this.$axios.$delete('/api/channelsync', {
+            data: { id: this.channelSync[index].id }
+          })
+        } catch (error) {
+          throw new Error(error)
+        }
+        this.channelSync.splice(index, 1)
+      }
     },
 
     close() {
@@ -231,11 +240,26 @@ export default {
       }, 300)
     },
 
-    save() {
+    async save() {
+      let response = null
       if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+        try {
+          response = await this.$axios.$patch('/api/channelsync', {
+            data: this.editedItem
+          })
+        } catch (error) {
+          throw new Error(error)
+        }
+        Object.assign(this.channelSync[this.editedIndex], response)
       } else {
-        this.desserts.push(this.editedItem)
+        try {
+          response = await this.$axios.$post('/api/channelsync', {
+            data: this.editedItem
+          })
+        } catch (error) {
+          throw new Error(error)
+        }
+        this.channelSync.push(response[response.length - 1])
       }
       this.close()
     }

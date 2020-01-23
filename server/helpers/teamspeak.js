@@ -1,4 +1,4 @@
-const { TeamSpeak, QueryProtocol } = require('ts3-nodejs-library')
+const { TeamSpeak } = require('ts3-nodejs-library')
 
 class TeamSpeakServer {
   constructor(config) {
@@ -12,30 +12,43 @@ class TeamSpeakServer {
   async init() {
     try {
       this.ts = await TeamSpeak.connect(this.config)
-        .then(async (teamspeak) => {
-          await Promise.all([
-            teamspeak.registerEvent('server'),
-            teamspeak.registerEvent('channel', 0),
-            teamspeak.registerEvent('textserver'),
-            teamspeak.registerEvent('textchannel'),
-            teamspeak.registerEvent('textprivate')
-          ])
-          teamspeak.on('close', async () => {
-            await teamspeak.reconnect(-1, 1000)
-          })
-          teamspeak.on('clientmoved', (ev) => {
-            console.log(ev)
-          })
-          teamspeak.on('clientdisconnect', (ev) => {
-            console.log(ev)
-          })
-        })
-        .catch((e) => {
-          throw e
-        })
     } catch (e) {
-      // error handling logic
+      throw new Error(`Can't connect to TeamSpeak.`)
     }
+
+    this.teamspeakReady = true
+
+    this.whoami = await this.ts.whoami()
+
+    await Promise.all([
+      this.ts.registerEvent('server'),
+      this.ts.registerEvent('channel', 0),
+      this.ts.registerEvent('textserver'),
+      this.ts.registerEvent('textchannel'),
+      this.ts.registerEvent('textprivate')
+    ])
+
+    this.ts.on('close', async () => {
+      this.teamspeakReady = false
+      await this.ts.reconnect(-1, 1000)
+      this.teamspeakReady = true
+    })
+    this.ts.on('clientmoved', (event) => {
+      console.log(event)
+    })
+    this.ts.on('clientdisconnect', (event) => {
+      console.log(event)
+    })
+  }
+
+  async getChannels() {
+    const data = await this.ts.channelList()
+    return data
+  }
+
+  async createChannel() {
+    const data = await this.ts.channelCreate()
+    return data
   }
 }
 module.exports = TeamSpeakServer
