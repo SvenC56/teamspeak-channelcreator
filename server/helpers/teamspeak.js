@@ -33,12 +33,8 @@ class TeamSpeakServer {
       await this.ts.reconnect(-1, 1000)
       this.teamspeakReady = true
     })
-    this.ts.on('clientmoved', (event) => {
-      console.log(event)
-    })
-    this.ts.on('clientdisconnect', (event) => {
-      console.log(event)
-    })
+    this.ts.on('clientmoved', (event) => {})
+    this.ts.on('clientdisconnect', (event) => {})
   }
 
   async getChannels() {

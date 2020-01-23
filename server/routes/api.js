@@ -47,7 +47,6 @@ router.get('/channelsync', async (req, res, next) => {
 
 router.post('/channelsync', async (req, res, next) => {
   try {
-    console.log(req.body)
     const response = await database.createChannelSync(req.body.data)
     await res.status(200).json(response)
   } catch (e) {
