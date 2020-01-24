@@ -3,8 +3,8 @@ const router = express.Router()
 require('dotenv').config()
 const { QueryProtocol } = require('ts3-nodejs-library')
 const database = require('./../helpers/database')
+const compare = require('./../helpers/compare')
 const TeamSpeakServer = require('./../helpers/teamspeak')
-
 const teamspeakConfig = {
   username: process.env.TEAMSPEAK_USERNAME
     ? process.env.TEAMSPEAK_USERNAME
@@ -93,6 +93,15 @@ router.get('/teamspeak/channels', async (req, res, next) => {
 router.post('/teamspeak/channel', async (req, res, next) => {
   try {
     const response = await teamspeakServer.createChannel()
+    await res.status(200).json(response)
+  } catch (e) {
+    next(e)
+  }
+})
+
+router.get('/channelsync/trigger', async (req, res, next) => {
+  try {
+    const response = await compare.compareChannels()
     await res.status(200).json(response)
   } catch (e) {
     next(e)

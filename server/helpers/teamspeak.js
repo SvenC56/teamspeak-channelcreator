@@ -1,12 +1,17 @@
 const { TeamSpeak } = require('ts3-nodejs-library')
+const compare = require('./compare')
 
 class TeamSpeakServer {
   constructor(config) {
+    if (TeamSpeakServer.instance instanceof TeamSpeakServer) {
+      return TeamSpeakServer.instance
+    }
     this.ts = TeamSpeak
     this.config = config
     this.whoami = null
     this.teamspeakReady = false
     this.init()
+    TeamSpeakServer.instance = this
   }
 
   async init() {
@@ -33,18 +38,53 @@ class TeamSpeakServer {
       await this.ts.reconnect(-1, 1000)
       this.teamspeakReady = true
     })
-    this.ts.on('clientmoved', (event) => {})
-    this.ts.on('clientdisconnect', (event) => {})
+    this.ts.on('clientmoved', async (event) => {
+      await compare.compareChannels()
+    })
+    this.ts.on('clientdisconnect', async (event) => {
+      await compare.compareChannels()
+    })
   }
 
   async getChannels() {
-    const data = await this.ts.channelList()
+    let data = null
+    try {
+      data = await this.ts.channelList()
+    } catch (error) {
+      throw new Error(error)
+    }
     return data
   }
 
-  async createChannel() {
-    const data = await this.ts.channelCreate()
+  async getSubchannels(cid) {
+    let data = null
+    try {
+      data = await this.ts.channelList({ pid: cid })
+    } catch (error) {
+      throw new Error(error)
+    }
+    return data
+  }
+
+  async createChannel(name, properties) {
+    let data = null
+    try {
+      data = await this.ts.channelCreate(name, properties)
+    } catch (error) {
+      throw new Error(error)
+    }
+    return data
+  }
+
+  async deleteChannel(cid, force) {
+    let data = null
+    try {
+      data = await this.ts.channelDelete(cid, force)
+    } catch (error) {
+      throw new Error(error)
+    }
     return data
   }
 }
+
 module.exports = TeamSpeakServer

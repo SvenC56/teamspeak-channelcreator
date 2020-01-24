@@ -148,7 +148,7 @@ export default {
       id: '',
       parent: '',
       prefix: '',
-      minChannel: 0,
+      minChannel: 1,
       maxUsers: 0,
       codec: 4,
       quality: 5,
@@ -159,7 +159,7 @@ export default {
     defaultItem: {
       parent: '',
       prefix: '',
-      minChannel: 0,
+      minChannel: 1,
       maxUsers: 0,
       codec: 4,
       quality: 5,
