@@ -1,7 +1,8 @@
 const express = require('express')
 const { Nuxt, Builder } = require('nuxt')
 const helmet = require('helmet')
-const config = require('../nuxt.config.js')
+const config = require('../nuxt.config')
+const logger = require('./helpers/winston')
 const api = require('./routes/api')
 const app = express()
 
@@ -30,10 +31,14 @@ async function start() {
   // Give nuxt middleware to express
   app.use(nuxt.render)
 
-  // Cors, Helmet & Rate Limiter
+  // Helmet
   app.use(helmet())
 
   // Listen the server
   app.listen(port, host)
+  logger.log({
+    level: 'info',
+    message: `Server is running on port ${port}.`
+  })
 }
 start()

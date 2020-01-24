@@ -2,6 +2,7 @@ require('dotenv').config()
 const { QueryProtocol } = require('ts3-nodejs-library')
 const database = require('./database')
 const TeamSpeakServer = require('./../helpers/teamspeak')
+const logger = require('./winston')
 const teamspeakConfig = {
   username: process.env.TEAMSPEAK_USERNAME
     ? process.env.TEAMSPEAK_USERNAME
@@ -112,6 +113,10 @@ exports.compareChannels = async () => {
       } catch (error) {
         throw new Error(error)
       }
+      logger.log({
+        level: 'info',
+        message: `Create channel '${element.channel_name}' with Parent ID: ${element.parent}`
+      })
     }
     // eslint-disable-next-line prefer-const
     for (let element of toDelete) {
@@ -120,6 +125,10 @@ exports.compareChannels = async () => {
       } catch (error) {
         throw new Error(error)
       }
+      logger.log({
+        level: 'info',
+        message: `Delete channel '${element[0].propcache.channel_name}' with Parent ID: ${element[0].propcache.pid}`
+      })
     }
     return toCreate
   } else {
