@@ -12,6 +12,8 @@ RUN mkdir -p /home/node/app/node_modules
 
 RUN mkdir -p /home/node/app/db
 
+RUN mkdir -p /home/node/app/logs
+
 RUN chown -Rh node:node /home/node/app
 
 WORKDIR /home/node/app
@@ -35,4 +37,4 @@ ENV NUXT_PORT=3000
 
 CMD [ "npm", "start" ]
 
-VOLUME ["/home/node/app/db"]
+VOLUME ["/home/node/app/logs", "/home/node/app/db"]
