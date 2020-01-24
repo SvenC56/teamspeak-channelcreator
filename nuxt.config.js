@@ -49,10 +49,16 @@ module.exports = {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseUrl:
-      process.env.NODE_ENV === 'production'
-        ? process.env.BASE_URL
-        : 'http://0.0.0.0'
+    axios: {
+      browserBaseURL:
+        process.env.NODE_ENV === 'production'
+          ? process.env.BASE_URL
+          : 'http://0.0.0.0',
+      baseUrl:
+        process.env.NODE_ENV === 'production'
+          ? process.env.BASE_URL
+          : 'http://0.0.0.0'
+    }
   },
   /*
    ** vuetify module configuration
