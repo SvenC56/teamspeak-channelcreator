@@ -1,5 +1,6 @@
 FROM node:12.11.1-alpine
 
+ENV NODE_ENV 'production'
 ENV TEAMSPEAK_USERNAME 'serveradmin'
 ENV TEAMSPEAK_PASSWORD ''
 ENV TEAMSPEAK_HOST 'localhost'
