@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:12.11.1-alpine
 
 ENV TEAMSPEAK_USERNAME 'serveradmin'
 ENV TEAMSPEAK_PASSWORD ''
@@ -7,12 +7,6 @@ ENV TEAMSPEAK_SERVER_PORT '9987'
 ENV TEAMSPEAK_QUERY_PORT '10011'
 ENV TEAMSPEAK_PROTOCOL 'raw'
 ENV TEAMSPEAK_BOT_NAME 'Bot'
-
-RUN apk add --no-cache --virtual .gyp \
-    python \
-    make \
-    g++ \
-    && apk del .gyp
 
 RUN mkdir -p /home/node/app/node_modules
 
