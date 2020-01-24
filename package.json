@@ -45,9 +45,7 @@
     "helmet": "^3.21.2",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
-    "node-cron": "^2.0.3",
     "nuxt": "^2.11.0",
-    "path": "^0.12.7",
     "shortid": "^2.2.15",
     "ts3-nodejs-library": "^2.3.2"
   },
