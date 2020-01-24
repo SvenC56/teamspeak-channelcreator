@@ -4,7 +4,6 @@
     <v-data-table
       :headers="headers"
       :items="channelSync"
-      :loading="loading"
       sort-by="parent"
       class="elevation-1"
     >
@@ -140,9 +139,22 @@ const instance = axios.create({
 export default {
   name: 'MainPage',
 
+  async asyncData({ params }) {
+    let channelSync = null
+    let channels = null
+    try {
+      channelSync = await instance.get('/api/channelsync')
+      channels = await instance.get('/api/teamspeak/channels')
+    } catch (error) {
+      throw new Error(error)
+    }
+    channelSync = channelSync.data
+    channels = channels.data
+    return { channelSync, channels }
+  },
+
   data: () => ({
     dialog: false,
-    loading: true,
     channels: [],
     channelSync: [],
     headers: [
@@ -201,12 +213,6 @@ export default {
     }
   },
 
-  async created() {
-    this.channelSync = await this.getChannelSync()
-    this.channels = await this.getChannels()
-    this.loading = false
-  },
-
   methods: {
     getChannelById(cid) {
       const channel = this.channels.find((x) => x.cid === cid)
@@ -214,14 +220,6 @@ export default {
         return channel
       }
       return cid
-    },
-    async getChannelSync() {
-      const channelSync = await instance.get('/api/channelsync')
-      return channelSync
-    },
-    async getChannels() {
-      const channels = await instance.get('/api/teamspeak/channels')
-      return channels
     },
     editItem(item) {
       this.editedIndex = this.channelSync.indexOf(item)
@@ -262,7 +260,7 @@ export default {
         } catch (error) {
           throw new Error(error)
         }
-        Object.assign(this.channelSync[this.editedIndex], response)
+        Object.assign(this.channelSync[this.editedIndex], response.data)
       } else {
         try {
           response = await instance.post('/api/channelsync', {
@@ -271,7 +269,7 @@ export default {
         } catch (error) {
           throw new Error(error)
         }
-        this.channelSync.push(response[response.length - 1])
+        this.channelSync.push(response.data[response.length - 1])
       }
       this.close()
     }
