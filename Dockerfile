@@ -8,6 +8,12 @@ ENV TEAMSPEAK_QUERY_PORT '10011'
 ENV TEAMSPEAK_PROTOCOL 'raw'
 ENV TEAMSPEAK_BOT_NAME 'Bot'
 
+RUN apk add --no-cache --virtual .gyp \
+    python \
+    make \
+    g++ \
+    && apk del .gyp
+
 RUN mkdir -p /home/node/app/node_modules
 
 RUN mkdir -p /home/node/app/db
