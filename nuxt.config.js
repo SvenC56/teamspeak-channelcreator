@@ -41,9 +41,10 @@ module.exports = {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
-    '@nuxtjs/axios',
     '@nuxtjs/vuetify'
   ],
+
+  modules: ['@nuxtjs/axios'],
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
