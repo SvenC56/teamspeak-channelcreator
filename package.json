@@ -38,6 +38,7 @@
   "homepage": "https://github.com/SvenC56/teamspeak-channelcreator#readme",
   "dependencies": {
     "@nuxtjs/axios": "^5.9.3",
+    "@nuxtjs/vuetify": "^1.10.2",
     "app-root-path": "^3.0.0",
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
@@ -53,7 +54,6 @@
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",
     "@nuxtjs/eslint-module": "^1.1.0",
-    "@nuxtjs/vuetify": "^1.10.2",
     "babel-eslint": "^10.0.3",
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
