@@ -125,6 +125,18 @@
 </template>
 
 <script>
+import axios from 'axios'
+const dev = process.env.NODE_ENV !== 'production'
+let baseURL = null
+if (dev) {
+  baseURL = 'http://localhost:3000'
+} else {
+  baseURL = process.env.BASE_URL
+}
+const instance = axios.create({
+  baseURL
+})
+
 export default {
   name: 'MainPage',
 
@@ -204,11 +216,11 @@ export default {
       return cid
     },
     async getChannelSync() {
-      const channelSync = await this.$axios.$get('/api/channelsync')
+      const channelSync = await instance.get('/api/channelsync')
       return channelSync
     },
     async getChannels() {
-      const channels = await this.$axios.$get('/api/teamspeak/channels')
+      const channels = await instance.get('/api/teamspeak/channels')
       return channels
     },
     editItem(item) {
@@ -222,7 +234,7 @@ export default {
       const isConfirmed = confirm('Are you sure you want to delete this item?')
       if (isConfirmed) {
         try {
-          await this.$axios.$delete('/api/channelsync', {
+          await instance.delete('/api/channelsync', {
             data: { id: this.channelSync[index].id }
           })
         } catch (error) {
@@ -244,7 +256,7 @@ export default {
       let response = null
       if (this.editedIndex > -1) {
         try {
-          response = await this.$axios.$patch('/api/channelsync', {
+          response = await instance.patch('/api/channelsync', {
             data: this.editedItem
           })
         } catch (error) {
@@ -253,7 +265,7 @@ export default {
         Object.assign(this.channelSync[this.editedIndex], response)
       } else {
         try {
-          response = await this.$axios.$post('/api/channelsync', {
+          response = await instance.post('/api/channelsync', {
             data: this.editedItem
           })
         } catch (error) {

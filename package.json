@@ -37,8 +37,8 @@
   },
   "homepage": "https://github.com/SvenC56/teamspeak-channelcreator#readme",
   "dependencies": {
-    "@nuxtjs/axios": "^5.9.3",
     "app-root-path": "^3.0.0",
+    "axios": "^0.19.2",
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
     "express": "^4.17.1",

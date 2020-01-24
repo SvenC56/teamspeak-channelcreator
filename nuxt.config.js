@@ -41,19 +41,15 @@ module.exports = {
     '@nuxtjs/eslint-module',
     '@nuxtjs/vuetify'
   ],
-
-  modules: ['@nuxtjs/axios'],
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    axios: {
-      baseUrl:
-        process.env.NODE_ENV === 'production'
-          ? process.env.BASE_URL
-          : 'http://0.0.0.0'
-    }
+    baseUrl:
+      process.env.NODE_ENV === 'production'
+        ? process.env.BASE_URL
+        : 'http://0.0.0.0'
   },
   /*
    ** vuetify module configuration
