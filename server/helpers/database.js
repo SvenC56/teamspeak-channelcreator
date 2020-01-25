@@ -57,8 +57,6 @@ exports.readSingleChannelSyncByParent = (parent) => {
 
 exports.updateChannelSync = (data) => {
   const dataset = sanitizeData(data)
-  console.log(data)
-  console.log(dataset)
   return db
     .get('channelSync')
     .find({ id: dataset.id })
