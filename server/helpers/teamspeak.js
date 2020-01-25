@@ -1,5 +1,6 @@
 const { TeamSpeak } = require('ts3-nodejs-library')
 const compare = require('./compare')
+const logger = require('./winston')
 
 class TeamSpeakServer {
   constructor(config) {
@@ -35,7 +36,15 @@ class TeamSpeakServer {
 
     this.ts.on('close', async () => {
       this.teamspeakReady = false
+      logger.log({
+        level: 'info',
+        message: `Connection lost. Reconnecting...`
+      })
       await this.ts.reconnect(-1, 1000)
+      logger.log({
+        level: 'info',
+        message: `Connection established.`
+      })
       this.teamspeakReady = true
     })
     this.ts.on('clientmoved', async (event) => {
