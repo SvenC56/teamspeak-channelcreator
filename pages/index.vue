@@ -143,8 +143,8 @@ export default {
     let channelSync = null
     let channels = null
     try {
-      channelSync = await instance.get('/api/channelsync')
-      channels = await instance.get('/api/teamspeak/channels')
+      channelSync = await axios.get('/api/channelsync')
+      channels = await axios.get('/api/teamspeak/channels')
     } catch (error) {
       throw new Error(error)
     }
