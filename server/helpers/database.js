@@ -12,9 +12,15 @@ db.defaults({ channelSync: [] }).write()
 function sanitizeData(data) {
   // eslint-disable-next-line prefer-const
   let sanitizedData = data
-  sanitizedData.prefix = sanitizedData.prefix.trim()
-  sanitizedData.topic = sanitizedData.topic.trim()
-  sanitizedData.description = sanitizedData.description.trim()
+  sanitizedData.prefix = data.prefix.trim()
+  sanitizedData.topic = data.topic.trim()
+  sanitizedData.description = data.description.trim()
+  sanitizedData.parent = parseInt(data.parent)
+  sanitizedData.minChannel = parseInt(data.minChannel)
+  sanitizedData.maxUsers = parseInt(data.maxUsers)
+  sanitizedData.codec = parseInt(data.codec)
+  sanitizedData.quality = parseInt(data.quality)
+  sanitizedData.joinPower = parseInt(data.joinPower)
   return sanitizedData
 }
 
@@ -51,6 +57,8 @@ exports.readSingleChannelSyncByParent = (parent) => {
 
 exports.updateChannelSync = (data) => {
   const dataset = sanitizeData(data)
+  console.log(data)
+  console.log(dataset)
   return db
     .get('channelSync')
     .find({ id: dataset.id })

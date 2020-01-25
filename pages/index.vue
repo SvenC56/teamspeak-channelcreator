@@ -30,12 +30,14 @@
                         :items="channels"
                         item-text="channel_name"
                         item-value="cid"
+                        :rules="[rules.required]"
                         label="Parent Channel"
                       ></v-select>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
                         v-model="editedItem.prefix"
+                        :rules="[rules.required, rules.prefixCounter]"
                         label="Prefix for channel"
                       ></v-text-field>
                     </v-col>
@@ -43,6 +45,7 @@
                       <v-text-field
                         v-model="editedItem.minChannel"
                         type="number"
+                        :rules="[rules.minNumber]"
                         label="Min. number of channels"
                       ></v-text-field>
                     </v-col>
@@ -51,11 +54,14 @@
                         v-model="editedItem.maxUsers"
                         type="number"
                         label="Max. number of users in the channel"
+                        hint="0 = unlimited"
+                        persistent-hint
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6">
                       <v-text-field
                         v-model="editedItem.joinPower"
+                        :rules="[rules.joinPower]"
                         type="number"
                         label="Required join power"
                       ></v-text-field>
@@ -83,12 +89,14 @@
                     <v-col cols="12" sm="12" md="12">
                       <v-text-field
                         v-model="editedItem.topic"
+                        :rules="[rules.topicCounter]"
                         label="The channel's topic"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
                       <v-textarea
                         v-model="editedItem.description"
+                        :rules="[rules.descriptionCounter]"
                         label="The channel's description"
                       ></v-textarea>
                     </v-col>
@@ -198,7 +206,17 @@ export default {
       { key: 'CELT Mono', value: 3 },
       { key: 'Opus Voice', value: 4 },
       { key: 'Opus Music', value: 5 }
-    ]
+    ],
+    rules: {
+      required: (value) => !!value || 'Required',
+      prefixCounter: (value) => value.length <= 37 || 'Max 37 characters',
+      minNumber: (value) => (value >= 0 && value <= 50) || 'Max 50 channels',
+      joinPower: (value) =>
+        (value >= 0 && value <= 100) || 'Max 100 join power',
+      topicCounter: (value) => value.length <= 255 || 'Max 255 characters',
+      descriptionCounter: (value) =>
+        value.length <= 8192 || 'Max 8192 characters'
+    }
   }),
 
   computed: {

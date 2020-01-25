@@ -95,18 +95,15 @@ exports.compareChannels = async () => {
     // eslint-disable-next-line prefer-const
     for (let element of toCreate) {
       const options = {
-        channel_codec: element.codec,
         cpid: element.parent,
-        channel_flag_permanent: 1
+        channel_codec: element.codec,
+        channel_codec_quality: element.quality,
+        channel_flag_permanent: 1,
+        channel_topic: element.topic,
+        channel_description: element.description
       }
       // const options = {
-      //   channel_codec: element.codec,
-      //   channel_codec_quality: element.quality,
-      //   channel_cpid: element.parent,
-      //   channel_description: element.description,
-      //   channel_topic: element.topic,
       //   channel_flag_maxclients_unlimited: element.maxUsers,
-      //   channel_flag_permanent: 1
       // }
       try {
         await teamspeakServer.createChannel(element.channel_name, options)
