@@ -233,10 +233,13 @@ export default {
 
   methods: {
     getChannelById(cid) {
-      const channel = this.channels.find((x) => x.cid === cid)
-      if (channel && channel.cid) {
-        return channel
+      if (this.channels) {
+        const channel = this.channels.find((x) => x.cid === cid)
+        if (channel && channel.cid) {
+          return channel
+        }
       }
+
       return cid
     },
     editItem(item) {

@@ -1,33 +1,10 @@
 const express = require('express')
 const router = express.Router()
 require('dotenv').config()
-const { QueryProtocol } = require('ts3-nodejs-library')
 const database = require('./../helpers/database')
 const compare = require('./../helpers/compare')
 const TeamSpeakServer = require('./../helpers/teamspeak')
-const teamspeakConfig = {
-  username: process.env.TEAMSPEAK_USERNAME
-    ? process.env.TEAMSPEAK_USERNAME
-    : 'serveradmin',
-  password: process.env.TEAMSPEAK_PASSWORD
-    ? process.env.TEAMSPEAK_PASSWORD
-    : 'password',
-  host: process.env.TEAMSPEAK_HOST ? process.env.TEAMSPEAK_HOST : 'localhost',
-  serverport: process.env.TEAMSPEAK_SERVER_PORT
-    ? process.env.TEAMSPEAK_SERVER_PORT
-    : 9987,
-  queryport: process.env.TEAMSPEAK_QUERY_PORT
-    ? process.env.TEAMSPEAK_QUERY_PORT
-    : 10011,
-  protocol:
-    process.env.TEAMSPEAK_PROTOCOL.toLowerCase() === 'ssh'
-      ? QueryProtocol.SSH
-      : QueryProtocol.RAW,
-  nickname: process.env.TEAMSPEAK_BOT_NAME
-    ? process.env.TEAMSPEAK_BOT_NAME
-    : 'Bot',
-  keepAlive: true
-}
+const teamspeakConfig = require('./../helpers/teamspeakConfig')
 
 const teamspeakServer = new TeamSpeakServer(teamspeakConfig)
 
@@ -74,7 +51,7 @@ router.patch('/channelsync', async (req, res, next) => {
 
 router.get('/teamspeak/whoami', async (req, res, next) => {
   try {
-    const response = await teamspeakServer.whoami
+    const response = teamspeakServer.getWhoami()
     await res.status(200).json(response)
   } catch (e) {
     next(e)
