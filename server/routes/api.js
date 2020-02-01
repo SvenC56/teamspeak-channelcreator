@@ -1,12 +1,13 @@
 const express = require('express')
 const router = express.Router()
 require('dotenv').config()
-const database = require('./../helpers/database')
+const Database = require('./../helpers/database')
 const compare = require('./../helpers/compare')
 const TeamSpeakServer = require('./../helpers/teamspeak')
 const teamspeakConfig = require('./../helpers/teamspeakConfig')
 
 const teamspeakServer = new TeamSpeakServer(teamspeakConfig)
+const database = new Database()
 
 router.get('/channelsync', async (req, res, next) => {
   try {

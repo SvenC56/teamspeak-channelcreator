@@ -1,10 +1,11 @@
 require('dotenv').config()
-const database = require('./database')
+const Database = require('./database')
 const TeamSpeakServer = require('./teamspeak')
 const logger = require('./winston')
 const teamspeakConfig = require('./teamspeakConfig')
 
 const teamspeakServer = new TeamSpeakServer(teamspeakConfig)
+const database = new Database()
 
 exports.compareChannels = async () => {
   const syncChannels = await database.readAllChannelSync()

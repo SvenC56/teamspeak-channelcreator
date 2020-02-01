@@ -47,22 +47,22 @@
     "lowdb": "^1.0.0",
     "nuxt": "^2.11.0",
     "shortid": "^2.2.15",
-    "ts3-nodejs-library": "^2.3.2",
+    "ts3-nodejs-library": "^2.3.3",
     "winston": "^3.2.1"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",
     "@nuxtjs/eslint-module": "^1.1.0",
-    "@nuxtjs/vuetify": "^1.10.2",
+    "@nuxtjs/vuetify": "^1.10.3",
     "babel-eslint": "^10.0.3",
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.9.0",
+    "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-nuxt": "^0.5.0",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-teamcity": "^2.2.0",
     "husky": "^4.2.1",
-    "lint-staged": "^10.0.3",
+    "lint-staged": "^10.0.7",
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1"
   }
