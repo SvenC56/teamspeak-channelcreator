@@ -136,7 +136,7 @@ import axios from 'axios'
 const dev = process.env.NODE_ENV !== 'production'
 let baseURL = null
 if (dev) {
-  baseURL = 'http://localhost:3000'
+  baseURL = 'http://localhost:8080'
 } else {
   baseURL = process.env.BASE_URL
 }
@@ -146,20 +146,6 @@ const instance = axios.create({
 
 export default {
   name: 'MainPage',
-
-  async asyncData({ params }) {
-    let channelSync = null
-    let channels = null
-    try {
-      channelSync = await instance.get('/api/channelsync')
-      channels = await instance.get('/api/teamspeak/channels')
-    } catch (error) {
-      throw new Error(error)
-    }
-    channelSync = channelSync.data
-    channels = channels.data
-    return { channelSync, channels }
-  },
 
   data: () => ({
     dialog: false,
@@ -218,6 +204,19 @@ export default {
         value.length <= 8192 || 'Max 8192 characters'
     }
   }),
+
+  async created() {
+    let channelSync = null
+    let channels = null
+    try {
+      channelSync = await instance.get('/api/channelsync')
+      channels = await instance.get('/api/teamspeak/channels')
+    } catch (error) {
+      throw new Error(error)
+    }
+    this.channelSync = channelSync.data
+    this.channels = channels.data
+  },
 
   computed: {
     formTitle() {

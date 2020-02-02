@@ -1,4 +1,3 @@
-require('dotenv').config()
 const { QueryProtocol } = require('ts3-nodejs-library')
 
 const teamspeakConfig = {

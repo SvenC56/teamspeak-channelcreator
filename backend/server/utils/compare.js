@@ -1,4 +1,3 @@
-require('dotenv').config()
 const Database = require('./database')
 const TeamSpeakServer = require('./teamspeak')
 const logger = require('./winston')
@@ -21,7 +20,10 @@ exports.compareChannels = async () => {
     try {
       filteredChannels = await teamspeakServer.getSubchannels(element.parent)
     } catch (error) {
-      throw new Error(error)
+      logger.log({
+        level: 'error',
+        message: error
+      })
     }
 
     let i = 0
@@ -85,7 +87,10 @@ exports.compareChannels = async () => {
     try {
       await teamspeakServer.createChannel(element.channel_name, options)
     } catch (error) {
-      throw new Error(error)
+      logger.log({
+        level: 'error',
+        message: error
+      })
     }
     logger.log({
       level: 'info',
@@ -97,7 +102,10 @@ exports.compareChannels = async () => {
     try {
       await teamspeakServer.deleteChannel(element[0].propcache.cid, 0)
     } catch (error) {
-      throw new Error(error)
+      logger.log({
+        level: 'error',
+        message: error
+      })
     }
     logger.log({
       level: 'info',

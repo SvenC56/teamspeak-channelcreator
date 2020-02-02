@@ -1,17 +1,34 @@
-node_modules
-npm-debug.log
-Dockerfile
-.dockerignore
+# Mac os files
+.DS_Store
 
-# Dist
-dist/
+# Ignore git files
+./git
+.git
 
-# Logs
-logs/
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
 
-# Database
-db/*.db
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
 
-.env
+# Excludes node_modules and dist directories
+backend/node_modules
+frontend/node_modules
+backend/dist
+frontend/dist
 
-.env.example
+# Ignore files which are used for development
+backend/db
+backend/logs
+README.md
+.pw
+*.exe

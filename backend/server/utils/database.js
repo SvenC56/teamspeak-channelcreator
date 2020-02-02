@@ -1,9 +1,12 @@
+const fs = require('fs-extra')
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 const appRoot = require('app-root-path')
 const shortid = require('shortid')
 
-const adapter = new FileSync(`${appRoot}/db/db.json`)
+const dbDir = `${appRoot}\\db\\database.json`
+fs.ensureFileSync(dbDir)
+const adapter = new FileSync(`${appRoot}/db/database.json`)
 
 class Database {
   constructor() {

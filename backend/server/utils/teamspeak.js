@@ -29,7 +29,11 @@ class TeamSpeakServer {
     try {
       this.ts = await TeamSpeak.connect(this.config)
     } catch (e) {
-      throw new Error(`Can't connect to TeamSpeak.`)
+      logger.log({
+        level: 'error',
+        message: e
+      })
+      return
     }
 
     this.setState(true)
@@ -47,10 +51,9 @@ class TeamSpeakServer {
     this.ts.on('close', async () => {
       this.setState(false)
       logger.log({
-        level: 'info',
+        level: 'error',
         message: `Connection lost. Reconnecting...`
       })
-
       await this.ts.reconnect(-1, 1000)
       logger.log({
         level: 'info',
@@ -59,11 +62,11 @@ class TeamSpeakServer {
       this.setState(true)
     })
 
-    this.ts.on('clientmoved', async (event) => {
+    this.ts.on('clientmoved', async () => {
       await compare.compareChannels()
     })
 
-    this.ts.on('clientdisconnect', async (event) => {
+    this.ts.on('clientdisconnect', async () => {
       await compare.compareChannels()
     })
   }
@@ -86,7 +89,10 @@ class TeamSpeakServer {
       try {
         data = await this.ts.channelList()
       } catch (error) {
-        throw new Error(error)
+        logger.log({
+          level: 'error',
+          message: error
+        })
       }
       return data
     }
@@ -98,7 +104,10 @@ class TeamSpeakServer {
       try {
         data = await this.ts.channelList({ pid: cid })
       } catch (error) {
-        throw new Error(error)
+        logger.log({
+          level: 'error',
+          message: error
+        })
       }
       return data
     }
@@ -110,7 +119,10 @@ class TeamSpeakServer {
       try {
         data = await this.ts.channelCreate(name, properties)
       } catch (error) {
-        throw new Error(error)
+        logger.log({
+          level: 'error',
+          message: error
+        })
       }
       return data
     }
@@ -122,7 +134,10 @@ class TeamSpeakServer {
       try {
         data = await this.ts.channelDelete(cid, force)
       } catch (error) {
-        throw new Error(error)
+        logger.log({
+          level: 'error',
+          message: error
+        })
       }
       return data
     }
