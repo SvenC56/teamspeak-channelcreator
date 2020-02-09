@@ -79,7 +79,8 @@ exports.compareChannels = async () => {
       channel_codec_quality: element.quality,
       channel_flag_permanent: 1,
       channel_topic: element.topic,
-      channel_description: element.description
+      channel_description: element.description,
+      channel_needed_talk_power: element.joinPower
     }
     // const options = {
     //   channel_flag_maxclients_unlimited: element.maxUsers,

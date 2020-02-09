@@ -1,5 +1,5 @@
 {
-  "name": "ts-channelcreator",
+  "name": "ts-channelcreator-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -38,12 +38,12 @@
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
-    "vuetify": "^2.2.8"
+    "vuetify": "^2.2.11"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.1.2",
-    "@vue/cli-plugin-eslint": "^4.1.2",
-    "@vue/cli-service": "^4.1.2",
+    "@vue/cli-plugin-babel": "^4.2.2",
+    "@vue/cli-plugin-eslint": "^4.2.2",
+    "@vue/cli-service": "^4.2.2",
     "@vue/eslint-config-prettier": "^5.1.0",
     "babel-eslint": "^10.0.3",
     "dotenv": "^8.2.0",
@@ -57,7 +57,7 @@
     "sass": "^1.25.0",
     "sass-loader": "^8.0.2",
     "vue-cli-plugin-docker": "^0.2.2",
-    "vue-cli-plugin-vuetify": "^2.0.3",
+    "vue-cli-plugin-vuetify": "^2.0.4",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.4.3"
   }
