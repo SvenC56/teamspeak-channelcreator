@@ -1,10 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const Database = require('../utils/database')
-const compare = require('../utils/compare')
-const TeamSpeakServer = require('../utils/teamspeak')
-const teamspeakConfig = require('../utils/teamspeakConfig')
+import express from 'express'
+import Database from '../utils/database'
+import compare from '../utils/compare'
+import TeamSpeakServer from '../utils/teamspeak'
+import teamspeakConfig from '../utils/teamspeakConfig'
 
+const router = express.Router()
 const teamspeakServer = new TeamSpeakServer(teamspeakConfig)
 const database = new Database()
 

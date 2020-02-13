@@ -1,16 +1,17 @@
-const { TeamSpeak } = require('ts3-nodejs-library')
-const compare = require('./compare')
-const logger = require('./winston')
+import { TeamSpeak } from 'ts3-nodejs-library'
+import teamspeakConfig from './teamspeakConfig'
+import compare from './compare'
+import logger from './winston'
 
 class TeamSpeakServer {
-  constructor(config) {
+  constructor() {
     if (TeamSpeakServer.instance instanceof TeamSpeakServer) {
       return TeamSpeakServer.instance
     }
 
     this.ts = TeamSpeak
-    this.config = config
-    this.name = config.nickname
+    this.config = teamspeakConfig
+    this.name = teamspeakConfig.nickname
     this.whoami = null
     this.teamspeakReady = false
     this.init()
@@ -23,7 +24,7 @@ class TeamSpeakServer {
   async init() {
     logger.log({
       level: 'info',
-      message: `${this.name} - Connecting to Teamspeak`
+      message: `${this.name} - Connecting to TeamSpeak server...`
     })
 
     try {
@@ -31,10 +32,15 @@ class TeamSpeakServer {
     } catch (e) {
       logger.log({
         level: 'error',
-        message: e
+        message: e.message
       })
       return
     }
+
+    logger.log({
+      level: 'info',
+      message: `${this.name} - Successfully connected to TeamSpeak server.`
+    })
 
     this.setState(true)
 

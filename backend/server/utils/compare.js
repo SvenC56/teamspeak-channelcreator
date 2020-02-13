@@ -1,9 +1,8 @@
-const Database = require('./database')
-const TeamSpeakServer = require('./teamspeak')
-const logger = require('./winston')
-const teamspeakConfig = require('./teamspeakConfig')
+import Database from './database'
+import TeamSpeakServer from './teamspeak'
+import logger from './winston'
 
-const teamspeakServer = new TeamSpeakServer(teamspeakConfig)
+const teamspeakServer = new TeamSpeakServer()
 const database = new Database()
 
 exports.compareChannels = async () => {

@@ -1,13 +1,15 @@
-const path = require('path')
-const history = require('connect-history-api-fallback')
-const express = require('express')
-const helmet = require('helmet')
-const cors = require('cors')
-const logger = require('./utils/winston')
-const api = require('./routes/api')
-const app = express()
+import path from 'path'
+import history from 'connect-history-api-fallback'
+import express from 'express'
+import helmet from 'helmet'
+import cors from 'cors'
+import {} from 'dotenv/config'
+import logger from './utils/winston'
+import config from './utils/config'
+import api from './routes/api'
 
-const { PORT = 8080 } = process.env
+const app = express()
+const port = config.get('port')
 
 app.use(express.json())
 // API Routes
@@ -22,10 +24,10 @@ app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'))
 })
 
-const server = app.listen(PORT, () => {
+const server = app.listen(port, () => {
   logger.log({
     level: 'info',
-    message: `Server is running on port ${PORT}.`
+    message: `Server is running on port ${port}.`
   })
 })
 
