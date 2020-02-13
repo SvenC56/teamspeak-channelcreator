@@ -1,5 +1,4 @@
 const { QueryProtocol } = require('ts3-nodejs-library')
-require('dotenv').config()
 
 const teamspeakConfig = {
   username: process.env.TEAMSPEAK_USERNAME
