@@ -38,7 +38,7 @@
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
-    "vuetify": "^2.2.11"
+    "vuetify": "^2.2.12"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.2.2",
@@ -52,12 +52,12 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-vue": "^5.2.3",
     "eslint-teamcity": "^2.2.0",
-    "husky": "^4.2.1",
+    "husky": "^4.2.3",
     "prettier": "^1.19.1",
     "sass": "^1.25.0",
     "sass-loader": "^8.0.2",
     "vue-cli-plugin-docker": "^0.2.2",
-    "vue-cli-plugin-vuetify": "^2.0.4",
+    "vue-cli-plugin-vuetify": "^2.0.5",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.4.3"
   }
