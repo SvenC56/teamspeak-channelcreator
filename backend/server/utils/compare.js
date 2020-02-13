@@ -37,10 +37,8 @@ exports.compareChannels = async () => {
     sortChannels(filteredChannels)
     if (i === filteredChannels.length - 1) {
       // keep these channels
-      // console.log('keep channels')
     } else if (i === filteredChannels.length) {
       // create new channels
-      // console.log('create channels')
       let channel = null
       if (filteredChannels[filteredChannels.length - 1]) {
         const highestChannelInt = parseInt(
@@ -62,7 +60,6 @@ exports.compareChannels = async () => {
       }
     } else {
       // these these channels
-      // console.log('delete channels')
       const markDelete = filteredChannels.filter(
         (x) => x.propcache.total_clients === 0
       )
@@ -73,20 +70,16 @@ exports.compareChannels = async () => {
   }
   // eslint-disable-next-line prefer-const
   for (let element of toCreate) {
-    const options = {
+    const properties = {
       cpid: element.parent,
       channel_codec: element.codec,
       channel_codec_quality: element.quality,
       channel_flag_permanent: 1,
       channel_topic: element.topic,
-      channel_description: element.description,
-      channel_needed_talk_power: element.joinPower
+      channel_description: element.description
     }
-    // const options = {
-    //   channel_flag_maxclients_unlimited: element.maxUsers,
-    // }
     try {
-      await teamspeakServer.createChannel(element.channel_name, options)
+      await teamspeakServer.createChannel(element.channel_name, properties)
     } catch (error) {
       logger.log({
         level: 'error',
