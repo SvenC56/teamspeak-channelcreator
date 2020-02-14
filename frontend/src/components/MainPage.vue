@@ -26,7 +26,7 @@
                   <v-row>
                     <v-col cols="12">
                       <v-select
-                        v-model="editedItem.parent"
+                        v-model.number="editedItem.parent"
                         :items="channels"
                         item-text="channel_name"
                         item-value="cid"
@@ -36,14 +36,14 @@
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="editedItem.prefix"
+                        v-model.trim="editedItem.prefix"
                         :rules="[rules.required, rules.prefixCounter]"
                         label="Prefix for channel"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="editedItem.minChannel"
+                        v-model.number="editedItem.minChannel"
                         type="number"
                         :rules="[rules.minNumber]"
                         label="Min. number of channels"
@@ -51,7 +51,7 @@
                     </v-col>
                     <v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="editedItem.maxUsers"
+                        v-model.number="editedItem.maxUsers"
                         type="number"
                         label="Max. number of users in the channel"
                         hint="0 = unlimited"
@@ -60,7 +60,7 @@
                     </v-col>
                     <v-col cols="12" sm="6">
                       <v-text-field
-                        v-model="editedItem.joinPower"
+                        v-model.number="editedItem.joinPower"
                         :rules="[rules.joinPower]"
                         type="number"
                         label="Required join power"
@@ -68,7 +68,7 @@
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
                       <v-select
-                        v-model="editedItem.codec"
+                        v-model.number="editedItem.codec"
                         :items="codecs"
                         item-text="key"
                         item-value="value"
@@ -78,7 +78,7 @@
                     <v-col cols="12" sm="12" md="12">
                       <v-subheader>Voice Quality</v-subheader>
                       <v-slider
-                        v-model="editedItem.quality"
+                        v-model.number="editedItem.quality"
                         step="1"
                         ticks="always"
                         max="10"
@@ -88,20 +88,22 @@
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
                       <v-text-field
-                        v-model="editedItem.topic"
+                        v-model.trim="editedItem.topic"
                         :rules="[rules.topicCounter]"
                         label="The channel's topic"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="12" md="12">
                       <v-textarea
-                        v-model="editedItem.description"
+                        v-model.trim="editedItem.description"
                         :rules="[rules.descriptionCounter]"
                         label="The channel's description"
                       ></v-textarea>
                     </v-col>
                   </v-row>
                 </v-container>
+                <v-alert type="error" v-if="error" v-text="error.data.message">
+                </v-alert>
               </v-card-text>
 
               <v-card-actions>
@@ -149,6 +151,7 @@ export default {
 
   data: () => ({
     dialog: false,
+    error: null,
     channels: [],
     channelSync: [],
     headers: [
@@ -164,18 +167,18 @@ export default {
     editedIndex: -1,
     editedItem: {
       id: '',
-      parent: '',
+      parent: 0,
       prefix: '',
       minChannel: 1,
       maxUsers: 0,
       codec: 4,
-      quality: 5,
+      quality: 6,
       joinPower: 0,
       topic: '',
       description: ''
     },
     defaultItem: {
-      parent: '',
+      parent: 0,
       prefix: '',
       minChannel: 1,
       maxUsers: 0,
@@ -212,7 +215,7 @@ export default {
       channelSync = await instance.get('/api/channelsync')
       channels = await instance.get('/api/teamspeak/channels')
     } catch (error) {
-      throw new Error(error)
+      this.error = error
     }
     this.channelSync = channelSync.data
     this.channels = channels.data
@@ -242,6 +245,7 @@ export default {
       return cid
     },
     editItem(item) {
+      this.error = null
       this.editedIndex = this.channelSync.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
@@ -256,7 +260,8 @@ export default {
             data: { id: this.channelSync[index].id }
           })
         } catch (error) {
-          throw new Error(error)
+          this.error = error.response
+          return
         }
         this.channelSync.splice(index, 1)
       }
@@ -275,19 +280,22 @@ export default {
       if (this.editedIndex > -1) {
         try {
           response = await instance.patch('/api/channelsync', {
-            data: this.editedItem
+            ...this.editedItem
           })
         } catch (error) {
-          throw new Error(error)
+          this.error = error.response
+          return
         }
         Object.assign(this.channelSync[this.editedIndex], response.data)
       } else {
         try {
+          delete this.editedItem.id
           response = await instance.post('/api/channelsync', {
-            data: this.editedItem
+            ...this.editedItem
           })
         } catch (error) {
-          throw new Error(error)
+          this.error = error.response
+          return
         }
         this.channelSync.push(response.data[response.length - 1])
       }

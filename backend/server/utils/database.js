@@ -25,12 +25,10 @@ class Database {
   }
 
   createChannelSync(data) {
-    // eslint-disable-next-line prefer-const
-    let dataset = sanitizeData(data)
-    dataset.id = shortid.generate()
+    data.id = shortid.generate()
     return this.db
       .get('channelSync')
-      .push(dataset)
+      .push(data)
       .write()
   }
 
@@ -56,11 +54,10 @@ class Database {
   }
 
   updateChannelSync(data) {
-    const dataset = sanitizeData(data)
     return this.db
       .get('channelSync')
-      .find({ id: dataset.id })
-      .assign(dataset)
+      .find({ id: data.id })
+      .assign(data)
       .write()
   }
 
@@ -73,18 +70,3 @@ class Database {
 }
 
 module.exports = Database
-
-function sanitizeData(data) {
-  // eslint-disable-next-line prefer-const
-  let sanitizedData = data
-  sanitizedData.prefix = data.prefix.trim()
-  sanitizedData.topic = data.topic.trim()
-  sanitizedData.description = data.description.trim()
-  sanitizedData.parent = parseInt(data.parent)
-  sanitizedData.minChannel = parseInt(data.minChannel)
-  sanitizedData.maxUsers = parseInt(data.maxUsers)
-  sanitizedData.codec = parseInt(data.codec)
-  sanitizedData.quality = parseInt(data.quality)
-  sanitizedData.joinPower = parseInt(data.joinPower)
-  return sanitizedData
-}
