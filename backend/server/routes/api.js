@@ -15,6 +15,18 @@ const router = express.Router()
 const teamspeakServer = new TeamSpeakServer()
 const database = new Database()
 
+router.get('/healthcheck', async (req, res, next) => {
+  try {
+    const response = {
+      server: 'up',
+      teamspeak: teamspeakServer.getState()
+    }
+    await res.status(200).json(response)
+  } catch (e) {
+    next(e)
+  }
+})
+
 router.get(
   '/channelsync',
   celebrate({

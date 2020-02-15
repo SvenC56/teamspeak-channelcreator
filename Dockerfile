@@ -34,3 +34,5 @@ RUN cd ${BACKEND_DIR} && npm prune --production && cd ../
 COPY --chown=node:node --from=build /usr/src/app/frontend/dist ${FRONTEND_DIR}/dist
 CMD ["npm", "run", "server:prod", "--prefix", "${BACKEND_DIR}"]
 VOLUME ["/home/node/app/backend/logs", "/home/node/app/backend/db"]
+HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \  
+    CMD node ${BACKEND_DIR}/healthcheck.js
