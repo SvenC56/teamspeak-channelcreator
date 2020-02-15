@@ -20,9 +20,9 @@ const healthCheck = http.get(options, (res) => {
   res.on('end', function() {
     body = JSON.parse(body)
     if (body.teamspeak && res.statusCode === 200) {
-      process.exit(1)
-    } else {
       process.exit(0)
+    } else {
+      process.exit(1)
     }
   })
 })
