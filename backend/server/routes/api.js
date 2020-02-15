@@ -55,15 +55,15 @@ router.post(
   async (req, res, next) => {
     try {
       const data = pick(req.body, [
-        parent,
-        prefix,
-        minChannel,
-        maxUsers,
-        codec,
-        quality,
-        joinPower,
-        topic,
-        description
+        'parent',
+        'prefix',
+        'minChannel',
+        'maxUsers',
+        'codec',
+        'quality',
+        'joinPower',
+        'topic',
+        'description'
       ])
       const response = await database.createChannelSync(data)
       await res.status(200).json(response)
@@ -95,29 +95,18 @@ router.patch(
   }),
   async (req, res, next) => {
     try {
-      const data = (({
-        id,
-        parent,
-        prefix,
-        minChannel,
-        maxUsers,
-        codec,
-        quality,
-        joinPower,
-        topic,
-        description
-      }) => ({
-        id,
-        parent,
-        prefix,
-        minChannel,
-        maxUsers,
-        codec,
-        quality,
-        joinPower,
-        topic,
-        description
-      }))(req.body)
+      const data = pick(req.body, [
+        'id',
+        'parent',
+        'prefix',
+        'minChannel',
+        'maxUsers',
+        'codec',
+        'quality',
+        'joinPower',
+        'topic',
+        'description'
+      ])
       const response = await database.updateChannelSync(data)
       await res.status(200).json(response)
     } catch (e) {
