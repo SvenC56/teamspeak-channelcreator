@@ -77,8 +77,16 @@ exports.compareChannels = async () => {
       channel_topic: element.topic,
       channel_description: element.description
     }
+    const perms = [
+      { name: 'i_channel_needed_join_power', value: element.joinPower },
+      { name: 'i_channel_needed_modify_power', value: 75 }
+    ]
     try {
-      await teamspeakServer.createChannel(element.channel_name, properties)
+      await teamspeakServer.createChannel(
+        element.channel_name,
+        properties,
+        perms
+      )
     } catch (error) {
       logger.log({
         level: 'error',

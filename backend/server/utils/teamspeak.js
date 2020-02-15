@@ -68,7 +68,7 @@ class TeamSpeakServer {
       this.setState(true)
     })
 
-    this.ts.on('clientmoved', async () => {
+    this.ts.on('clientmoved', async (event) => {
       await compare.compareChannels()
     })
 
@@ -91,61 +91,56 @@ class TeamSpeakServer {
 
   async getChannels() {
     if (this.getState()) {
-      let data = null
       try {
-        data = await this.ts.channelList()
+        return await this.ts.channelList()
       } catch (error) {
         logger.log({
           level: 'error',
           message: error
         })
       }
-      return data
     }
   }
 
   async getSubchannels(cid) {
     if (this.getState()) {
-      let data = null
       try {
-        data = await this.ts.channelList({ pid: cid })
+        return await this.ts.channelList({ pid: cid })
       } catch (error) {
         logger.log({
           level: 'error',
           message: error
         })
       }
-      return data
     }
   }
 
-  async createChannel(name, properties) {
+  async createChannel(name, properties, perms) {
     if (this.getState()) {
-      let data = null
       try {
-        data = await this.ts.channelCreate(name, properties)
+        let channel = await this.ts.channelCreate(name, properties)
+        for (let perm of perms) {
+          await channel.setPerm(perm.name, perm.value)
+        }
       } catch (error) {
         logger.log({
           level: 'error',
           message: error
         })
       }
-      return data
     }
   }
 
   async deleteChannel(cid, force) {
     if (this.getState()) {
-      let data = null
       try {
-        data = await this.ts.channelDelete(cid, force)
+        return await this.ts.channelDelete(cid, force)
       } catch (error) {
         logger.log({
           level: 'error',
           message: error
         })
       }
-      return data
     }
   }
 }
