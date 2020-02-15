@@ -1,8 +1,9 @@
 import express from 'express'
+import { pick } from 'lodash'
+import { celebrate, Segments } from 'celebrate'
 import Database from '../utils/database'
 import compare from '../utils/compare'
 import TeamSpeakServer from '../utils/teamspeak'
-import { celebrate, Segments } from 'celebrate'
 import {
   getSingleSchema,
   createSchema,
@@ -41,7 +42,7 @@ router.post(
   }),
   async (req, res, next) => {
     try {
-      const data = (({
+      const data = pick(req.body, [
         parent,
         prefix,
         minChannel,
@@ -51,17 +52,7 @@ router.post(
         joinPower,
         topic,
         description
-      }) => ({
-        parent,
-        prefix,
-        minChannel,
-        maxUsers,
-        codec,
-        quality,
-        joinPower,
-        topic,
-        description
-      }))(req.body)
+      ])
       const response = await database.createChannelSync(data)
       await res.status(200).json(response)
     } catch (e) {
