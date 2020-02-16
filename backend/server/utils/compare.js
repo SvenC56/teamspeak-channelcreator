@@ -103,13 +103,9 @@ async function checkAllChannels(syncChannels) {
       // create new channels
       let channel = null
       if (filteredChannels[filteredChannels.length - 1]) {
-        const highestChannelInt = parseInt(
-          filteredChannels[filteredChannels.length - 1].channel_name.match(
-            /\d+$/
-          )
-        )
+        const highestChannelNumber = getChannelNumber(filteredChannels)
         channel = {
-          channel_name: `${element.prefix} ${highestChannelInt + 1}`,
+          channel_name: `${element.prefix} ${highestChannelNumber + 1}`,
           ...element
         }
         toCreate.push(channel)
@@ -121,7 +117,6 @@ async function checkAllChannels(syncChannels) {
         toCreate.push(channel)
       }
     } else {
-      // these these channels
       const markDelete = filteredChannels.filter((x) => x.total_clients === 0)
       // Remove first element
       markDelete.shift()
@@ -138,4 +133,11 @@ function sortChannels(channels) {
     const keyB = b.channel_name.match(/\d+$/)
     return parseInt(keyA) - parseInt(keyB)
   })
+}
+
+function getChannelNumber(channels) {
+  const numbers = channels.map((channel) =>
+    parseInt(channel.channel_name.match(/\d+$/))
+  )
+  return Math.max(...numbers)
 }
