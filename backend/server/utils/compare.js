@@ -7,67 +7,21 @@ const database = new Database()
 
 exports.compareChannels = async () => {
   const syncChannels = await database.readAllChannelSync()
-  // eslint-disable-next-line prefer-const
-  let filteredChannels = []
-  // eslint-disable-next-line prefer-const
-  let toCreate = []
-  // eslint-disable-next-line prefer-const
-  let toDelete = []
 
-  // eslint-disable-next-line prefer-const
-  for (let element of syncChannels) {
-    try {
-      filteredChannels = await teamspeakServer.getSubchannels(element.parent)
-    } catch (error) {
-      logger.log({
-        level: 'error',
-        message: error
-      })
-    }
+  const { toCreate, toDelete } = await checkAllChannels(syncChannels)
 
-    let i = 0
-    // eslint-disable-next-line prefer-const
-    for (let channel of filteredChannels) {
-      if (channel.propcache.total_clients > 0) {
-        i++
-      }
-    }
-    // Sort channels in correct order
-    sortChannels(filteredChannels)
-    if (i === filteredChannels.length - 1) {
-      // keep these channels
-    } else if (i === filteredChannels.length) {
-      // create new channels
-      let channel = null
-      if (filteredChannels[filteredChannels.length - 1]) {
-        const highestChannelInt = parseInt(
-          filteredChannels[
-            filteredChannels.length - 1
-          ].propcache.channel_name.match(/\d+$/)
-        )
-        channel = {
-          channel_name: `${element.prefix} ${highestChannelInt + 1}`,
-          ...element
-        }
-        toCreate.push(channel)
-      } else {
-        channel = {
-          channel_name: `${element.prefix} 1`,
-          ...element
-        }
-        toCreate.push(channel)
-      }
-    } else {
-      // these these channels
-      const markDelete = filteredChannels.filter(
-        (x) => x.propcache.total_clients === 0
-      )
-      // Remove first element
-      markDelete.shift()
-      toDelete.push(markDelete)
-    }
+  if (toCreate.length > 0) {
+    await createChannels(toCreate)
   }
-  // eslint-disable-next-line prefer-const
+
+  if (toDelete.length > 0) {
+    await deleteChannels(toDelete)
+  }
+
+  return
+}
+
+async function createChannels(toCreate) {
   for (let element of toCreate) {
     const properties = {
       cpid: element.parent,
@@ -87,40 +41,101 @@ exports.compareChannels = async () => {
         properties,
         perms
       )
+      logger.log({
+        level: 'info',
+        message: `Create channel '${element.channel_name}' with Parent ID: ${element.parent}`
+      })
     } catch (error) {
       logger.log({
         level: 'error',
         message: error
       })
     }
-    logger.log({
-      level: 'info',
-      message: `Create channel '${element.channel_name}' with Parent ID: ${element.parent}`
-    })
   }
-  // eslint-disable-next-line prefer-const
+}
+
+async function deleteChannels(toDelete) {
   for (let element of toDelete) {
     try {
-      await teamspeakServer.deleteChannel(element[0].propcache.cid, 0)
+      await teamspeakServer.deleteChannel(element[0].cid, 0)
+      logger.log({
+        level: 'info',
+        message: `Delete channel '${element[0].channel_name}' with Parent ID: ${element[0].pid}`
+      })
     } catch (error) {
       logger.log({
         level: 'error',
         message: error
       })
     }
-    logger.log({
-      level: 'info',
-      message: `Delete channel '${element[0].propcache.channel_name}' with Parent ID: ${element[0].propcache.pid}`
-    })
   }
-  return toCreate
+}
+
+async function checkAllChannels(syncChannels) {
+  let filteredChannels = []
+  let toCreate = []
+  let toDelete = []
+
+  for (let element of syncChannels) {
+    try {
+      filteredChannels = await teamspeakServer.getSubchannels(element.parent)
+      filteredChannels = filteredChannels.map((channel) => ({
+        ...channel.propcache
+      }))
+    } catch (error) {
+      logger.log({
+        level: 'error',
+        message: error
+      })
+    }
+
+    let i = 0
+    for (let channel of filteredChannels) {
+      if (channel.total_clients > 0) {
+        i++
+      }
+    }
+    // Sort channels in correct order
+    // sortChannels(filteredChannels)
+    if (i === filteredChannels.length - 1) {
+      // keep these channels
+    } else if (i === filteredChannels.length) {
+      // create new channels
+      let channel = null
+      if (filteredChannels[filteredChannels.length - 1]) {
+        const highestChannelInt = parseInt(
+          filteredChannels[filteredChannels.length - 1].channel_name.match(
+            /\d+$/
+          )
+        )
+        channel = {
+          channel_name: `${element.prefix} ${highestChannelInt + 1}`,
+          ...element
+        }
+        toCreate.push(channel)
+      } else {
+        channel = {
+          channel_name: `${element.prefix} 1`,
+          ...element
+        }
+        toCreate.push(channel)
+      }
+    } else {
+      // these these channels
+      const markDelete = filteredChannels.filter((x) => x.total_clients === 0)
+      // Remove first element
+      markDelete.shift()
+      toDelete.push(markDelete)
+    }
+  }
+  return { toCreate, toDelete }
 }
 
 function sortChannels(channels) {
   return channels.sort((a, b) => {
     // Strip chars from string
-    const keyA = a.propcache.channel_name.match(/\d+$/)
-    const keyB = b.propcache.channel_name.match(/\d+$/)
+    const keyA = a.channel_name.match(/\d+$/)
+    const keyB = b.channel_name.match(/\d+$/)
     return parseInt(keyA) - parseInt(keyB)
   })
 }
