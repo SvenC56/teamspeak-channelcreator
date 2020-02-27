@@ -33,7 +33,7 @@ class Database {
   }
 
   readAllChannelSync() {
-    const data = this.db.get('channelSync')
+    const data = this.db.get('channelSync').value()
     return data
   }
 

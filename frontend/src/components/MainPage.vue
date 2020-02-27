@@ -138,7 +138,7 @@ import axios from 'axios'
 const dev = process.env.NODE_ENV !== 'production'
 let baseURL = null
 if (dev) {
-  baseURL = 'http://localhost:8080'
+  baseURL = 'http://localhost:8081'
 } else {
   baseURL = process.env.BASE_URL
 }
