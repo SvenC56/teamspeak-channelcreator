@@ -75,6 +75,13 @@ class TeamSpeakServer {
     this.ts.on('clientdisconnect', async () => {
       await compare.compareChannels()
     })
+
+    this.ts.on('error', (e) =>
+      logger.log({
+        level: 'error',
+        message: e.message
+      })
+    )
   }
 
   setState(state) {
