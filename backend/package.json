@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/SvenC56/teamspeak-channelcreator#readme",
   "dependencies": {
-    "@hapi/boom": "^9.0.0",
+    "@hapi/boom": "^9.1.0",
     "app-root-path": "^3.0.0",
     "celebrate": "^11.0.2",
     "connect-history-api-fallback": "^1.6.0",
@@ -40,7 +40,7 @@
     "helmet": "^3.21.3",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
-    "regenerator-runtime": "^0.13.3",
+    "regenerator-runtime": "^0.13.5",
     "shortid": "^2.2.15",
     "ts3-nodejs-library": "^2.4.1",
     "winston": "^3.2.1"
