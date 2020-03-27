@@ -143,7 +143,7 @@ if (dev) {
   baseURL = process.env.BASE_URL
 }
 const instance = axios.create({
-  baseURL
+  baseURL,
 })
 
 export default {
@@ -162,7 +162,7 @@ export default {
       { text: 'Codec', value: 'codec' },
       { text: 'Codec Quality', value: 'quality' },
       { text: 'Join Power', value: 'joinPower' },
-      { text: 'Actions', value: 'action', sortable: false }
+      { text: 'Actions', value: 'action', sortable: false },
     ],
     editedIndex: -1,
     editedItem: {
@@ -175,7 +175,7 @@ export default {
       quality: 6,
       joinPower: 0,
       topic: '',
-      description: ''
+      description: '',
     },
     defaultItem: {
       parent: 0,
@@ -186,7 +186,7 @@ export default {
       quality: 5,
       joinPower: 0,
       topic: '',
-      description: ''
+      description: '',
     },
     codecs: [
       { key: 'Speex Schmalband', value: 0 },
@@ -194,7 +194,7 @@ export default {
       { key: 'Speex Ultra-Breitband', value: 2 },
       { key: 'CELT Mono', value: 3 },
       { key: 'Opus Voice', value: 4 },
-      { key: 'Opus Music', value: 5 }
+      { key: 'Opus Music', value: 5 },
     ],
     rules: {
       required: (value) => !!value || 'Required',
@@ -204,8 +204,8 @@ export default {
         (value >= 0 && value <= 100) || 'Max 100 join power',
       topicCounter: (value) => value.length <= 255 || 'Max 255 characters',
       descriptionCounter: (value) =>
-        value.length <= 8192 || 'Max 8192 characters'
-    }
+        value.length <= 8192 || 'Max 8192 characters',
+    },
   }),
 
   async created() {
@@ -224,13 +224,13 @@ export default {
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
-    }
+    },
   },
 
   watch: {
     dialog(val) {
       val || this.close()
-    }
+    },
   },
 
   methods: {
@@ -257,7 +257,7 @@ export default {
       if (isConfirmed) {
         try {
           await instance.delete('/api/channelsync', {
-            data: { id: this.channelSync[index].id }
+            data: { id: this.channelSync[index].id },
           })
         } catch (error) {
           this.error = error.response
@@ -280,7 +280,7 @@ export default {
       if (this.editedIndex > -1) {
         try {
           response = await instance.patch('/api/channelsync', {
-            ...this.editedItem
+            ...this.editedItem,
           })
         } catch (error) {
           this.error = error.response
@@ -291,7 +291,7 @@ export default {
         try {
           delete this.editedItem.id
           response = await instance.post('/api/channelsync', {
-            ...this.editedItem
+            ...this.editedItem,
           })
         } catch (error) {
           this.error = error.response
@@ -300,7 +300,7 @@ export default {
         this.channelSync.push(response.data[response.length - 1])
       }
       this.close()
-    }
-  }
+    },
+  },
 }
 </script>
