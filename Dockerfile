@@ -42,6 +42,7 @@ RUN mkdir -p ${BACKEND_DIR}/logs && chown node ${BACKEND_DIR}/logs
 RUN mkdir -p ${BACKEND_DIR}/db && chown node ${BACKEND_DIR}/db
 COPY --chown=node:node --from=backend /home/node/app/backend/dist ${BACKEND_DIR}/dist
 COPY --chown=node:node --from=backend /home/node/app/backend/package.json ${BACKEND_DIR}/package.json
+COPY --chown=node:node --from=backend ${BACKEND_DIR}/healthcheck.js ${BACKEND_DIR}/healthcheck.js
 RUN yarn install --cwd ${BACKEND_DIR} --production
 CMD ["sh", "-c", "yarn --cwd $BACKEND_DIR server:prod"]
 VOLUME ["/home/node/app/backend/logs", "/home/node/app/backend/db"]
