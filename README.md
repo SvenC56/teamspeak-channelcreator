@@ -14,7 +14,7 @@ By default this project can be accessed by everybody. This is OK if you have it 
 
 You can simply pull the provided docker image.
 
-[svenc56/teamspeak-channelcreator](https://hub.docker.com/r/svenc56/teamspeak-channelcreator)
+[![Build Status](https://drone.sc-web.de/api/badges/SvenC56/teamspeak-channelcreator/status.svg)](https://drone.sc-web.de/SvenC56/teamspeak-channelcreator)
 
 Please add the following environment variables:
 
