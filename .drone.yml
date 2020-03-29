@@ -8,7 +8,7 @@ steps:
     settings:
       repo: svenc56/discourse-teamspeak-bridge
       dockerfile: Dockerfile
-      tag: ["latest", "alpine", "${DRONE_BUILD_NUMBER}"]
+      tag: ["latest", "alpine", "1.${DRONE_BUILD_NUMBER}"]
       username:
         from_secret: docker_username
       password:
