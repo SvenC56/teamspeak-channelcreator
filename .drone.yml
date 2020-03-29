@@ -8,19 +8,8 @@ steps:
     settings:
       repo: svenc56/discourse-teamspeak-bridge
       dockerfile: Dockerfile
-      auto_tag: true
-      auto_tag_suffix: alpine
+      tag: ["latest", "alpine", "${DRONE_BUILD_NUMBER}"]
       username:
         from_secret: docker_username
       password:
         from_secret: docker_password
-
-trigger:
-  event:
-    - cron
-    - custom
-    - push
-    - pull_request
-    - tag
-    - promote
-    - rollback
