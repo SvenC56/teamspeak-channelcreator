@@ -1,6 +1,6 @@
 # Teamspeak Channelcreator
 
-[![Build Status](https://travis-ci.com/SvenC56/teamspeak-channelcreator.svg?branch=master)](https://travis-ci.com/SvenC56/teamspeak-channelcreator)
+[![Build Status](https://drone.sc-web.de/api/badges/SvenC56/teamspeak-channelcreator/status.svg)](https://drone.sc-web.de/SvenC56/teamspeak-channelcreator)
 
 This project automates the process for creating TeamSpeak Channels if needed. It provides a simple user interface to manage the channel manager.
 
@@ -13,8 +13,6 @@ By default this project can be accessed by everybody. This is OK if you have it 
 ### Docker
 
 You can simply pull the provided docker image.
-
-[![Build Status](https://drone.sc-web.de/api/badges/SvenC56/teamspeak-channelcreator/status.svg)](https://drone.sc-web.de/SvenC56/teamspeak-channelcreator)
 
 Please add the following environment variables:
 
