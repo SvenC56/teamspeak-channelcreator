@@ -6,7 +6,7 @@ steps:
   - name: docker
     image: plugins/docker
     settings:
-      repo: svenc56/discourse-teamspeak-bridge
+      repo: svenc56/teamspeak-channelcreator
       dockerfile: Dockerfile
       tag: ["latest", "alpine", "v1.${DRONE_BUILD_NUMBER}"]
       username:
