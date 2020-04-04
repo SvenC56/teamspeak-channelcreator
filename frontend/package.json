@@ -38,7 +38,7 @@
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
-    "vuetify": "^2.2.18"
+    "vuetify": "^2.2.20"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.2.3",
@@ -51,7 +51,6 @@
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-vue": "^6.2.2",
-    "eslint-teamcity": "^2.2.0",
     "husky": "^4.2.3",
     "prettier": "^2.0.2",
     "sass": "^1.26.3",

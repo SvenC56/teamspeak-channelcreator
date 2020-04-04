@@ -7,17 +7,17 @@ const options = {
   timeout: 2000,
   method: 'GET',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
-  json: true
+  json: true,
 }
 
 const healthCheck = http.get(options, (res) => {
   let body = ''
-  res.on('data', function(chunk) {
+  res.on('data', function (chunk) {
     body += chunk
   })
-  res.on('end', function() {
+  res.on('end', function () {
     body = JSON.parse(body)
     if (body.teamspeak && res.statusCode === 200) {
       process.exit(0)
@@ -27,7 +27,7 @@ const healthCheck = http.get(options, (res) => {
   })
 })
 
-healthCheck.on('error', function(err) {
+healthCheck.on('error', function (err) {
   process.exit(1)
 })
 

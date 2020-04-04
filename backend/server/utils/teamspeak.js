@@ -24,7 +24,7 @@ class TeamSpeakServer {
   async init() {
     logger.log({
       level: 'info',
-      message: `${this.name} - Connecting to TeamSpeak server...`
+      message: `${this.name} - Connecting to TeamSpeak server...`,
     })
 
     try {
@@ -32,14 +32,14 @@ class TeamSpeakServer {
     } catch (e) {
       logger.log({
         level: 'error',
-        message: e.message
+        message: e.message,
       })
       return
     }
 
     logger.log({
       level: 'info',
-      message: `${this.name} - Successfully connected to TeamSpeak server.`
+      message: `${this.name} - Successfully connected to TeamSpeak server.`,
     })
 
     this.setState(true)
@@ -49,21 +49,18 @@ class TeamSpeakServer {
     await Promise.all([
       this.ts.registerEvent('server'),
       this.ts.registerEvent('channel', 0),
-      this.ts.registerEvent('textserver'),
-      this.ts.registerEvent('textchannel'),
-      this.ts.registerEvent('textprivate')
     ])
 
     this.ts.on('close', async () => {
       this.setState(false)
       logger.log({
         level: 'error',
-        message: `Connection lost. Reconnecting...`
+        message: `Connection lost. Reconnecting...`,
       })
       await this.ts.reconnect(-1, 1000)
       logger.log({
         level: 'info',
-        message: `Connection established.`
+        message: `Connection established.`,
       })
       this.setState(true)
     })
@@ -76,12 +73,24 @@ class TeamSpeakServer {
       await compare.compareChannels()
     })
 
-    this.ts.on('error', (e) =>
-      logger.log({
-        level: 'error',
-        message: e.message
-      })
-    )
+    this.ts.on('error', (e) => {
+      switch (true) {
+        case /^could not fetch client/.test(e.message): {
+          logger.log({
+            level: 'warn',
+            message: e.message,
+          })
+          break
+        }
+        default: {
+          logger.log({
+            level: 'error',
+            message: e.message,
+          })
+          break
+        }
+      }
+    })
   }
 
   setState(state) {
@@ -103,7 +112,7 @@ class TeamSpeakServer {
       } catch (error) {
         logger.log({
           level: 'error',
-          message: error
+          message: error,
         })
       }
     }
@@ -116,7 +125,7 @@ class TeamSpeakServer {
       } catch (error) {
         logger.log({
           level: 'error',
-          message: error
+          message: error,
         })
       }
     }
@@ -132,7 +141,7 @@ class TeamSpeakServer {
       } catch (error) {
         logger.log({
           level: 'error',
-          message: error
+          message: error,
         })
       }
     }
@@ -145,7 +154,7 @@ class TeamSpeakServer {
       } catch (error) {
         logger.log({
           level: 'error',
-          message: error
+          message: error,
         })
       }
     }

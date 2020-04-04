@@ -8,7 +8,7 @@ const teamspeakConfig = {
   queryport: config.get('teamspeak.queryPort'),
   protocol: config.get('teamspeak.protocol'),
   nickname: config.get('teamspeak.botName'),
-  keepAlive: true
+  keepAlive: true,
 }
 
 module.exports = teamspeakConfig

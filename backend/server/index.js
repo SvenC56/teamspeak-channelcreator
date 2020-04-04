@@ -35,7 +35,7 @@ app.get('/*', (req, res) => {
 const server = app.listen(port, () => {
   logger.log({
     level: 'info',
-    message: `Server is running on port ${port}.`
+    message: `Server is running on port ${port}.`,
   })
 })
 

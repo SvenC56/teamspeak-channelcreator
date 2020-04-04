@@ -8,7 +8,7 @@ import {
   getSingleSchema,
   createSchema,
   deleteSchema,
-  updateSchema
+  updateSchema,
 } from '../utils/validationSchema'
 
 const router = express.Router()
@@ -19,7 +19,7 @@ router.get('/healthcheck', async (req, res, next) => {
   try {
     const response = {
       server: 'up',
-      teamspeak: teamspeakServer.getState()
+      teamspeak: teamspeakServer.getState(),
     }
     await res.status(200).json(response)
   } catch (e) {
@@ -30,7 +30,7 @@ router.get('/healthcheck', async (req, res, next) => {
 router.get(
   '/channelsync',
   celebrate({
-    [Segments.BODY]: getSingleSchema
+    [Segments.BODY]: getSingleSchema,
   }),
   async (req, res, next) => {
     try {
@@ -50,7 +50,7 @@ router.get(
 router.post(
   '/channelsync',
   celebrate({
-    [Segments.BODY]: createSchema
+    [Segments.BODY]: createSchema,
   }),
   async (req, res, next) => {
     try {
@@ -63,7 +63,7 @@ router.post(
         'quality',
         'joinPower',
         'topic',
-        'description'
+        'description',
       ])
       const response = await database.createChannelSync(data)
       await res.status(200).json(response)
@@ -76,7 +76,7 @@ router.post(
 router.delete(
   '/channelsync',
   celebrate({
-    [Segments.BODY]: deleteSchema
+    [Segments.BODY]: deleteSchema,
   }),
   async (req, res, next) => {
     try {
@@ -91,7 +91,7 @@ router.delete(
 router.patch(
   '/channelsync',
   celebrate({
-    [Segments.BODY]: updateSchema
+    [Segments.BODY]: updateSchema,
   }),
   async (req, res, next) => {
     try {
@@ -105,7 +105,7 @@ router.patch(
         'quality',
         'joinPower',
         'topic',
-        'description'
+        'description',
       ])
       const response = await database.updateChannelSync(data)
       await res.status(200).json(response)

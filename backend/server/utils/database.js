@@ -26,10 +26,7 @@ class Database {
 
   createChannelSync(data) {
     data.id = shortid.generate()
-    return this.db
-      .get('channelSync')
-      .push(data)
-      .write()
+    return this.db.get('channelSync').push(data).write()
   }
 
   readAllChannelSync() {
@@ -38,34 +35,21 @@ class Database {
   }
 
   readSingleChannelSync(id) {
-    const data = this.db
-      .get('channelSync')
-      .find({ id })
-      .value()
+    const data = this.db.get('channelSync').find({ id }).value()
     return data
   }
 
   readSingleChannelSyncByParent(parent) {
-    const data = this.db
-      .get('channelSync')
-      .find({ parent })
-      .value()
+    const data = this.db.get('channelSync').find({ parent }).value()
     return data
   }
 
   updateChannelSync(data) {
-    return this.db
-      .get('channelSync')
-      .find({ id: data.id })
-      .assign(data)
-      .write()
+    return this.db.get('channelSync').find({ id: data.id }).assign(data).write()
   }
 
   deleteChannelSync(id) {
-    return this.db
-      .get('channelSync')
-      .remove({ id })
-      .write()
+    return this.db.get('channelSync').remove({ id }).write()
   }
 }
 

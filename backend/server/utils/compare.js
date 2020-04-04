@@ -29,11 +29,11 @@ async function createChannels(toCreate) {
       channel_codec_quality: element.quality,
       channel_flag_permanent: 1,
       channel_topic: element.topic,
-      channel_description: element.description
+      channel_description: element.description,
     }
     const perms = [
       { name: 'i_channel_needed_join_power', value: element.joinPower },
-      { name: 'i_channel_needed_modify_power', value: 75 }
+      { name: 'i_channel_needed_modify_power', value: 75 },
     ]
     try {
       await teamspeakServer.createChannel(
@@ -43,12 +43,12 @@ async function createChannels(toCreate) {
       )
       logger.log({
         level: 'info',
-        message: `Create channel '${element.channel_name}' with Parent ID: ${element.parent}`
+        message: `Create channel '${element.channel_name}' with Parent ID: ${element.parent}`,
       })
     } catch (error) {
       logger.log({
         level: 'error',
-        message: error
+        message: error,
       })
     }
   }
@@ -60,12 +60,12 @@ async function deleteChannels(toDelete) {
       await teamspeakServer.deleteChannel(element[0].cid, 0)
       logger.log({
         level: 'info',
-        message: `Delete channel '${element[0].channel_name}' with Parent ID: ${element[0].pid}`
+        message: `Delete channel '${element[0].channel_name}' with Parent ID: ${element[0].pid}`,
       })
     } catch (error) {
       logger.log({
         level: 'error',
-        message: error
+        message: error,
       })
     }
   }
@@ -80,12 +80,12 @@ async function checkAllChannels(syncChannels) {
     try {
       filteredChannels = await teamspeakServer.getSubchannels(element.parent)
       filteredChannels = filteredChannels.map((channel) => ({
-        ...channel.propcache
+        ...channel.propcache,
       }))
     } catch (error) {
       logger.log({
         level: 'error',
-        message: error
+        message: error,
       })
     }
 
@@ -106,13 +106,13 @@ async function checkAllChannels(syncChannels) {
         const highestChannelNumber = getChannelNumber(filteredChannels)
         channel = {
           channel_name: `${element.prefix} ${highestChannelNumber + 1}`,
-          ...element
+          ...element,
         }
         toCreate.push(channel)
       } else {
         channel = {
           channel_name: `${element.prefix} 1`,
-          ...element
+          ...element,
         }
         toCreate.push(channel)
       }
