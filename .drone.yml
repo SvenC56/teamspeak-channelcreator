@@ -2,14 +2,36 @@ kind: pipeline
 type: docker
 name: default
 
+trigger:
+  event:
+    - cron
+    - tag
+
 steps:
-  - name: docker
-    image: plugins/docker
+  - name: docker-tag
+    image: plugins/docker:18.09
     settings:
       repo: svenc56/teamspeak-channelcreator
       dockerfile: Dockerfile
-      tag: ["latest", "alpine", "v1.${DRONE_BUILD_NUMBER}"]
+      group: release
+      auto_tag: true
       username:
         from_secret: docker_username
       password:
         from_secret: docker_password
+    when:
+      events: [tag]
+
+  - name: docker-latest
+    image: plugins/docker:18.09
+    settings:
+      repo: svenc56/teamspeak-channelcreator
+      dockerfile: Dockerfile
+      group: release
+      tag: ["latest"]
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      events: [tag]
