@@ -30,6 +30,8 @@ async function createChannels(toCreate) {
       channel_flag_permanent: 1,
       channel_topic: element.topic,
       channel_description: element.description,
+      channel_maxclients: element.maxUsers,
+      channel_flag_maxclients_unlimited: element.maxUsers === 0 ? 1 : 0,
     }
     const perms = [
       { name: 'i_channel_needed_join_power', value: element.joinPower },
