@@ -1,4 +1,4 @@
-# Teamspeak Channelcreator
+# TeamSpeak Channelcreator
 
 [![Build Status](https://drone.sc-web.de/api/badges/SvenC56/teamspeak-channelcreator/status.svg)](https://drone.sc-web.de/SvenC56/teamspeak-channelcreator)
 
@@ -14,59 +14,38 @@ By default this project can be accessed by everybody. This is OK if you have it 
 
 You can simply pull the provided docker image.
 
-Please add the following environment variables:
+[svenc56/teamspeak-channelcreator](https://hub.docker.com/r/svenc56/teamspeak-channelcreator)
 
-```dockerfile
-ENV TEAMSPEAK_USERNAME 'serveradmin'
-ENV TEAMSPEAK_PASSWORD ''
-ENV TEAMSPEAK_HOST 'localhost'
-ENV TEAMSPEAK_SERVER_PORT '9987'
-ENV TEAMSPEAK_QUERY_PORT '10011'
-ENV TEAMSPEAK_PROTOCOL 'raw'
-ENV TEAMSPEAK_BOT_NAME 'Bot'
-ENV BASE_URL ''
-ENV PORT 8080
-```
+Please add the following environment variables depending on your setup:
+
+- [SQLite](sqlite.env.example)
+- [MySQL/ Postgres](mysql.env.example)
 
 ### Installing
 
 1.) Install dependencies:
 
 ```bash
-$ npm install
+$ yarn install
 ```
 
 2.) Configure Environment Variables
 
-Edit the `.env.example` file with your data.
+Edit the `.env.*.example` file with your data.
 
-## Running the tests
+## API Documentation
 
-At the moment no testing is done. This will be a part of future development.
-
-```bash
-$ npm run test
-```
+This application has a full API description available under: `/api/swagger`
 
 ## Deployment
 
 ```bash
-$ npm run build
-
-$ npm run serve
-```
-
-_or_
-
-```bash
-$ npm run start
+$ yarn start:dev
 ```
 
 ## Built With
 
-- [Node.js](https://nodejs.org/en/)
-
-- [Express](https://expressjs.com/de/) - The Web-Framework
+- [Nest.js](https://nestjs.com/)
 
 ## Authors
 
@@ -75,7 +54,3 @@ $ npm run start
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
-## Acknowledgments
-
-- [TS3-NodeJS-Library](https://github.com/Multivit4min/TS3-NodeJS-Library)
