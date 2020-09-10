@@ -1,17 +1,14 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { TeamspeakConfigService } from 'src/config/teamspeak/config.service';
 // TeamSpeak
-import {
-  TeamSpeak,
-  TeamSpeakChannel,
-  TeamSpeakClient,
-  TeamSpeakServerGroup,
-} from 'ts3-nodejs-library';
+import { TeamSpeak, TeamSpeakChannel } from 'ts3-nodejs-library';
+import { ChannelEdit } from 'ts3-nodejs-library/lib/types/PropertyTypes';
 import {
   InstanceInfo,
   ServerInfo,
   Whoami,
 } from 'ts3-nodejs-library/lib/types/ResponseTypes';
+import { Permission } from 'ts3-nodejs-library/lib/util/Permission';
 import { GetParentIdInput } from './input/get-parent-id.input';
 
 @Injectable()
@@ -80,17 +77,19 @@ export class TeamspeakService {
     }
   }
 
-  async getServerGroups(): Promise<TeamSpeakServerGroup[]> {
+  async getChannels(): Promise<TeamSpeakChannel[]> {
     try {
-      return this.teamspeak.serverGroupList();
+      return this.teamspeak.channelList();
     } catch (e) {
       this.logger.error(e.message);
     }
   }
 
-  async getChannels(): Promise<TeamSpeakChannel[]> {
+  async getChannelById(
+    cid: TeamSpeakChannel.ChannelType,
+  ): Promise<TeamSpeakChannel> {
     try {
-      return this.teamspeak.channelList();
+      return this.teamspeak.getChannelById(cid);
     } catch (e) {
       this.logger.error(e.message);
     }
@@ -107,52 +106,29 @@ export class TeamspeakService {
     }
   }
 
-  async clientList(): Promise<TeamSpeakClient[]> {
+  async createChannel(
+    name: string,
+    properties?: ChannelEdit,
+    perms?: Permission.PermType[],
+  ): Promise<TeamSpeakChannel> {
     try {
-      return this.teamspeak.clientList({ clientType: 0 });
+      const channel = await this.teamspeak.channelCreate(name, properties);
+      for (const perm of perms) {
+        // TODO Set Permissions
+        await channel.setPerm(perm);
+      }
+      return channel;
     } catch (e) {
       this.logger.error(e.message);
     }
   }
 
-  async addClientServerGroup(
-    teamspeakClient: TeamSpeakClient,
-    sgArray: number[],
-  ): Promise<any> {
+  async deleteChannel(
+    cid: TeamSpeakChannel.ChannelType,
+    force?: boolean,
+  ): Promise<[]> {
     try {
-      return this.asyncForEach(sgArray, async (sg) => {
-        return this.teamspeak.serverGroupAddClient(
-          teamspeakClient.databaseId,
-          sg,
-        );
-      });
-    } catch (e) {
-      this.logger.error(e.message);
-    }
-  }
-
-  async removeClientServerGroup(
-    teamspeakClient: TeamSpeakClient,
-    sgArray: number[],
-  ): Promise<any> {
-    try {
-      return this.asyncForEach(sgArray, async (sg) => {
-        return this.teamspeak.serverGroupDelClient(
-          teamspeakClient.databaseId,
-          sg,
-        );
-      });
-    } catch (e) {
-      this.logger.error(e.message);
-    }
-  }
-
-  async sendClientTextMessage(
-    teamspeakClient: TeamSpeakClient,
-    message: string,
-  ): Promise<any> {
-    try {
-      this.teamspeak.sendTextMessage(teamspeakClient.clid, 1, message);
+      return this.teamspeak.channelDelete(cid, force);
     } catch (e) {
       this.logger.error(e.message);
     }

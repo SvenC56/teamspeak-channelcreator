@@ -1,15 +1,14 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  TeamSpeakChannel,
-  TeamSpeakClient,
-  TeamSpeakServerGroup,
-} from 'ts3-nodejs-library';
+import { TeamSpeakChannel } from 'ts3-nodejs-library';
 import {
   InstanceInfo,
   ServerInfo,
   Whoami,
 } from 'ts3-nodejs-library/lib/types/ResponseTypes';
+import { CreateChannelInput } from './input/create-channel.input';
+import { DeleteChannelInput } from './input/delete-channel.input';
+import { GetChannelByIdInput } from './input/get-channel-by-id.input';
 import { GetParentIdInput } from './input/get-parent-id.input';
 import { TeamspeakService } from './teamspeak.service';
 
@@ -38,33 +37,47 @@ export class TeamspeakController {
     return this.teamspeakService.getInstanceInfo();
   }
 
-  @Get('clientlist')
-  @ApiTags('teamspeak')
-  @ApiOperation({ summary: 'TeamSpeak - Client List' })
-  clientList(): Promise<TeamSpeakClient[]> {
-    return this.teamspeakService.clientList();
-  }
-
-  @Get('servergrouplist')
-  @ApiTags('teamspeak')
-  @ApiOperation({ summary: 'TeamSpeak - Server Group List' })
-  serverGroupList(): Promise<TeamSpeakServerGroup[]> {
-    return this.teamspeakService.getServerGroups();
-  }
-
-  @Get('channellist')
+  @Get('channel')
   @ApiTags('teamspeak')
   @ApiOperation({ summary: 'TeamSpeak - Channel List' })
   channelList(): Promise<TeamSpeakChannel[]> {
     return this.teamspeakService.getChannels();
   }
 
-  @Get('clientlist/:pid')
+  @Get('channel/:pid')
   @ApiTags('teamspeak')
   @ApiOperation({ summary: 'TeamSpeak - Get Channel List by Parent ID' })
   subChannelList(
     @Param() getParentIdInput: GetParentIdInput,
   ): Promise<TeamSpeakChannel[]> {
     return this.teamspeakService.getSubChannels(getParentIdInput);
+  }
+
+  @Get('channel/find/:cid')
+  @ApiTags('teamspeak')
+  @ApiOperation({ summary: 'TeamSpeak - Get Single Channel by Parent ID' })
+  getSingleChannel(
+    @Param() getChannelByIdInput: GetChannelByIdInput,
+  ): Promise<TeamSpeakChannel> {
+    return this.teamspeakService.getChannelById(getChannelByIdInput.cid);
+  }
+
+  @Post('channel')
+  @ApiTags('teamspeak')
+  @ApiOperation({ summary: 'TeamSpeak - Create a Channel' })
+  createChannel(
+    @Body() createChannelInput: CreateChannelInput,
+  ): Promise<TeamSpeakChannel> {
+    return this.teamspeakService.createChannel(createChannelInput.name);
+  }
+
+  @Delete('channel')
+  @ApiOperation({ summary: 'TeamSpeak - Delete Single Channel by ID' })
+  @ApiTags('teamspeak')
+  deleteChannel(@Body() deleteChannelInput: DeleteChannelInput): Promise<[]> {
+    return this.teamspeakService.deleteChannel(
+      deleteChannelInput.cid,
+      deleteChannelInput.force,
+    );
   }
 }
