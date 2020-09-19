@@ -4,6 +4,9 @@ import { Assignment } from 'src/assignment/assignment.entity';
 import { AssignmentService } from 'src/assignment/assignment.service';
 import { TeamspeakService } from 'src/teamspeak/teamspeak.service';
 import { TeamSpeakChannel } from 'ts3-nodejs-library';
+import { ChannelEdit } from 'ts3-nodejs-library/lib/types/PropertyTypes';
+import { Permission } from 'ts3-nodejs-library/lib/util/Permission';
+import { CreateChannel } from './interface/create-channel.interface';
 
 @Injectable()
 export class SyncService {
@@ -30,20 +33,12 @@ export class SyncService {
 
     const { toCreate, toDelete } = await this.checkAllChannels(assignments);
 
-    if (toCreate.length > 0) {
-      console.log(toCreate);
-    }
-
-    if (toDelete.length > 0) {
-      console.log(toDelete);
-    }
-
-    return;
+    return this.handleResult(toCreate, toDelete);
   }
 
   private async checkAllChannels(syncChannels: Assignment[]) {
     let filteredChannels: TeamSpeakChannel[] = [];
-    const toCreate: TeamSpeakChannel[] = [];
+    const toCreate: CreateChannel[] = [];
     let toDelete: TeamSpeakChannel[] = [];
 
     for (const element of syncChannels) {
@@ -68,20 +63,14 @@ export class SyncService {
         // keep these channels
       } else if (i === filteredChannels.length) {
         // create new channels
-        let channel = null;
         if (filteredChannels[filteredChannels.length - 1]) {
           const highestChannelNumber = this.getChannelNumber(filteredChannels);
-          channel = {
-            channel_name: `${element.prefix} ${highestChannelNumber + 1}`,
+          toCreate.push({
             ...element,
-          };
-          toCreate.push(channel);
+            channelName: `${element.prefix} ${highestChannelNumber + 1}`,
+          });
         } else {
-          channel = {
-            channel_name: `${element.prefix} 1`,
-            ...element,
-          };
-          toCreate.push(channel);
+          toCreate.push({ ...element, channelName: `${element.prefix} 1` });
         }
       } else {
         const markDelete = filteredChannels.filter((x) => x.totalClients === 0);
@@ -91,6 +80,57 @@ export class SyncService {
       }
     }
     return { toCreate, toDelete };
+  }
+
+  private async handleResult(
+    toCreate: CreateChannel[],
+    toDelete: TeamSpeakChannel[],
+  ): Promise<void> {
+    if (toCreate.length > 0) {
+      toCreate.forEach(async (channel) => {
+        try {
+          const channelName = channel.channelName;
+          const properties: ChannelEdit = {
+            cpid: '' + channel.parent,
+            channelCodec: channel.codec,
+            channelCodecQuality: channel.quality,
+            channelFlagPermanent: true,
+            channelTopic: channel.topic,
+            channelDescription: channel.description,
+          };
+          const perms: Permission.PermType[] = [
+            {
+              permname: 'i_channel_needed_join_power',
+              permvalue: channel.joinPower,
+            },
+            { permname: 'i_channel_needed_modify_power', permvalue: 75 },
+          ];
+          await this.teamspeakService.createChannel(
+            channelName,
+            properties,
+            perms,
+          );
+          this.logger.log(
+            `Create channel '${channel.channelName}' with Parent ID: ${channel.parent}`,
+          );
+        } catch (error) {
+          this.logger.error(error.message);
+        }
+      });
+    }
+
+    if (toDelete.length > 0) {
+      toDelete.forEach(async (channel) => {
+        try {
+          await this.teamspeakService.deleteChannel(channel.cid, false);
+          this.logger.log(
+            `Delete channel '${channel.name}' with Parent ID: ${channel.pid}`,
+          );
+        } catch (error) {
+          this.logger.error(error.message);
+        }
+      });
+    }
   }
 
   //   private sortChannels(channels: TeamSpeakChannel[]) {
