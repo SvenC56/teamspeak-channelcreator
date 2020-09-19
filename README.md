@@ -19,7 +19,7 @@ You can simply pull the provided docker image.
 Please add the following environment variables depending on your setup:
 
 - [SQLite](sqlite.env.example)
-- [MySQL/ Postgres](mysql.env.example)
+- [MySQL](mysql.env.example)
 
 ### Installing
 
