@@ -1,0 +1,17 @@
+version: "3.5"
+
+services:
+  assignment:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: teamspeak-channelcreator
+    env_file:
+      - .env
+    volumes:
+      - assignment-database:/home/node/app/database
+    ports:
+      - 3000:3000
+
+volumes:
+  assignment-database:

@@ -1,34 +1,14 @@
-# Mac os files
-.DS_Store
+# backend
+dist/
+documentation/
+node_modules/
+orm.config.json
+.env
+.env.example
 
-# Ignore git files
-./git
-.git
-
-# Log files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-*.log
-
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw*
-
-# Excludes node_modules and dist directories
-backend/node_modules
-frontend/node_modules
-backend/dist
-frontend/dist
-
-# Ignore files which are used for development
-backend/db
-backend/logs
-README.md
-.pw
-*.exe
+#frontend
+frontend/.nuxt/
+frontend/dist/
+frontend/node_modules/
+frontend/.env
+frontend/.env.example

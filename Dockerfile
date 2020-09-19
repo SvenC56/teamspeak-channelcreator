@@ -1,51 +1,52 @@
 # frontend builder
-FROM node:alpine as frontend
-ENV FRONTEND_DIR ./frontend
+FROM node:latest as frontend
 WORKDIR /home/node/app
-COPY ${FRONTEND_DIR} ${FRONTEND_DIR}
-RUN yarn install --cwd ${FRONTEND_DIR}
-RUN yarn --cwd ${FRONTEND_DIR} build
+COPY ./frontend ./frontend
+RUN yarn install --cwd ./frontend --silent
+RUN yarn --cwd ./frontend generate
 
 # backend builder
-FROM node:alpine as backend
-ENV BACKEND_DIR ./backend
+FROM node:latest as backend
 WORKDIR /home/node/app
-RUN mkdir -p ${BACKEND_DIR}/db
-RUN mkdir -p ${BACKEND_DIR}/logs
-COPY --chown=node:node ${BACKEND_DIR} ${BACKEND_DIR}
-RUN yarn install --cwd ${BACKEND_DIR}
-RUN yarn --cwd ${BACKEND_DIR} build
+COPY . .
+RUN yarn install --silent
+RUN yarn build
 
 # Node.JS Runner
 FROM node:alpine as runner
 LABEL maintainer="SvenC56 <https://github.com/svenc56>"
-ENV BACKEND_DIR ./backend
-ENV FRONTEND_DIR ./frontend
-ENV PORT 8080
-ENV BASE_URL ''
-ENV TEAMSPEAK_USERNAME 'serveradmin'
-ENV TEAMSPEAK_PASSWORD ''
-ENV TEAMSPEAK_HOST 'localhost'
-ENV TEAMSPEAK_SERVER_PORT '9987'
-ENV TEAMSPEAK_QUERY_PORT '10011'
-ENV TEAMSPEAK_PROTOCOL 'raw'
-ENV TEAMSPEAK_BOT_NAME 'Bot'
+
+ENV PORT 3000
+ENV NODE_ENV production
+ENV APP_NAME TeamSpeak Channelcreator
+ENV DATABASE_HOST ""
+ENV DATABASE_PORT ""
+ENV DATABASE_NAME ""
+ENV DATABASE_USER ""
+ENV DATABASE_PASSWORD ""
+ENV TEAMSPEAK_HOST ""
+ENV TEAMSPEAK_SERVER_PORT ""
+ENV TEAMSPEAK_QUERY_PORT ""
+ENV TEAMSPEAK_PROTOCOL ""
+ENV TEAMSPEAK_USERNAME ""
+ENV TEAMSPEAK_PASSWORD ""
+ENV TEAMSPEAK_BOT_NAME ""
 
 RUN mkdir -p /home/node/app && chown node /home/node/app
 USER node
 WORKDIR /home/node/app
 # Copy Frontend Build
-COPY --chown=node:node --from=frontend /home/node/app/frontend/dist ${FRONTEND_DIR}/dist
+COPY --chown=node:node --from=frontend /home/node/app/frontend/dist ./frontend/dist
 # Copy Backend Build
-RUN mkdir -p ${BACKEND_DIR} && chown node ${BACKEND_DIR}
-RUN mkdir -p ${BACKEND_DIR}/logs && chown node ${BACKEND_DIR}/logs
-RUN mkdir -p ${BACKEND_DIR}/db && chown node ${BACKEND_DIR}/db
-COPY --chown=node:node --from=backend /home/node/app/backend/dist ${BACKEND_DIR}/dist
-COPY --chown=node:node --from=backend /home/node/app/backend/package.json ${BACKEND_DIR}/package.json
-COPY --chown=node:node --from=backend /home/node/app/backend/healthcheck.js ${BACKEND_DIR}/healthcheck.js
-RUN yarn install --cwd ${BACKEND_DIR} --production
-CMD ["sh", "-c", "yarn --cwd $BACKEND_DIR server:prod"]
-VOLUME ["/home/node/app/backend/logs", "/home/node/app/backend/db"]
-HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \  
-    CMD node ${BACKEND_DIR}/healthcheck.js
+COPY --chown=node:node --from=backend /home/node/app/dist ./dist
+# Database for Sqlite
+RUN mkdir -p ./database && chown node ./database
+
+# Install Production Dependencies
+COPY --chown=node:node package.json package.json
+COPY --chown=node:node yarn.lock yarn.lock
+RUN yarn install --production --silent
+
+VOLUME ["/home/node/app/database"]
+CMD ["sh", "-c", "yarn start:prod"]
 EXPOSE ${PORT}
