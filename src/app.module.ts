@@ -8,6 +8,7 @@ import { DatabaseConfigService } from './config/database/config.service';
 import { DatabaseConfigModule } from './config/database/config.module';
 import { TeamspeakModule } from './teamspeak/teamspeak.module';
 import { AssignmentModule } from './assignment/assignment.module';
+import { SyncModule } from './sync/sync.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AssignmentModule } from './assignment/assignment.module';
     ScheduleModule.forRoot(),
     TeamspeakModule,
     AssignmentModule,
+    SyncModule,
   ],
 })
 export class AppModule {}
