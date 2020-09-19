@@ -13,14 +13,29 @@ export class AssignmentRepository extends Repository<Assignment> {
   async createAssignment(
     createAssignmentInput: CreateAssignmentInput,
   ): Promise<Assignment> {
-    const { name, shield, dcid, tsid } = createAssignmentInput;
+    const {
+      parent,
+      codec,
+      description,
+      joinPower,
+      max,
+      min,
+      prefix,
+      quality,
+      topic,
+    } = createAssignmentInput;
     const date = new Date();
 
     const assignment = new Assignment();
-    assignment.name = name;
-    assignment.shield = shield;
-    assignment.dcid = dcid;
-    assignment.tsid = tsid;
+    assignment.parent = parent;
+    codec ? (assignment.codec = codec) : null;
+    description ? (assignment.description = description) : null;
+    joinPower ? (assignment.joinPower = joinPower) : null;
+    max ? (assignment.max = max) : null;
+    min ? (assignment.min = min) : null;
+    prefix ? (assignment.prefix = prefix) : null;
+    quality ? (assignment.quality = quality) : null;
+    topic ? (assignment.topic = topic) : null;
     assignment.createdAt = date;
     assignment.updatedAt = null;
 
@@ -37,27 +52,31 @@ export class AssignmentRepository extends Repository<Assignment> {
     updateAssignmentInput: UpdateAssignmentInput,
   ): Promise<Assignment> {
     const { id } = getAssignmentInput;
-    const { name, shield, dcid, tsid } = updateAssignmentInput;
+    const {
+      parent,
+      codec,
+      description,
+      joinPower,
+      max,
+      min,
+      prefix,
+      quality,
+      topic,
+    } = updateAssignmentInput;
 
     const updatedAssignment = await this.findOne({ id });
 
     const date = new Date();
 
-    if (name) {
-      updatedAssignment.name = name;
-    }
-
-    if (typeof shield === 'boolean') {
-      updatedAssignment.shield = shield;
-    }
-
-    if (dcid) {
-      updatedAssignment.dcid = dcid;
-    }
-
-    if (tsid) {
-      updatedAssignment.tsid = tsid;
-    }
+    parent ? (updatedAssignment.parent = parent) : null;
+    codec ? (updatedAssignment.codec = codec) : null;
+    description ? (updatedAssignment.description = description) : null;
+    joinPower ? (updatedAssignment.joinPower = joinPower) : null;
+    max ? (updatedAssignment.max = max) : null;
+    min ? (updatedAssignment.min = min) : null;
+    prefix ? (updatedAssignment.prefix = prefix) : null;
+    quality ? (updatedAssignment.quality = quality) : null;
+    topic ? (updatedAssignment.topic = topic) : null;
 
     updatedAssignment.updatedAt = date;
 
