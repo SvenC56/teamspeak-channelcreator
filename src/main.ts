@@ -6,7 +6,13 @@ import { AppConfigService } from './config/app/config.service';
 
 async function bootstrap() {
   const logger = new Logger('Server');
-  const app = await NestFactory.create(AppModule, { cors: { origin: '*' } });
+  const app = await NestFactory.create(AppModule, {
+    cors: { origin: '*' },
+    logger:
+      process.env.ENV == 'development'
+        ? ['debug', 'error', 'log', 'verbose', 'warn']
+        : ['error', 'warn', 'log'],
+  });
 
   // Get app config for cors settings and starting the app.
   const appConfig: AppConfigService = app.get('AppConfigService');
