@@ -1,5 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { TeamspeakConfigService } from 'src/config/teamspeak/config.service';
+import { SyncService } from 'src/sync/sync.service';
 // TeamSpeak
 import { TeamSpeak, TeamSpeakChannel } from 'ts3-nodejs-library';
 import { ChannelEdit } from 'ts3-nodejs-library/lib/types/PropertyTypes';
@@ -9,14 +10,17 @@ import {
   Whoami,
 } from 'ts3-nodejs-library/lib/types/ResponseTypes';
 import { Permission } from 'ts3-nodejs-library/lib/util/Permission';
-import { GetParentIdInput } from './input/get-parent-id.input';
 
 @Injectable()
 export class TeamspeakService {
   private readonly logger = new Logger(TeamspeakService.name);
 
   private teamspeak: TeamSpeak;
-  constructor(private readonly teamspeakConfig: TeamspeakConfigService) {
+  constructor(
+    private readonly teamspeakConfig: TeamspeakConfigService,
+    @Inject(forwardRef(() => SyncService))
+    private readonly syncService: SyncService,
+  ) {
     this.teamspeak = new TeamSpeak(teamspeakConfig.config);
 
     this.teamspeak.on('close', async () => {
@@ -36,10 +40,6 @@ export class TeamspeakService {
       }
     });
 
-    // this.teamspeak.on('debug', (event) => {
-    //   this.logger.debug(event);
-    // });
-
     this.teamspeak.on('ready', async () => {
       this.logger.log('Connected to TeamSpeak Server!');
       await this.teamspeak.useByPort(
@@ -47,9 +47,22 @@ export class TeamspeakService {
         teamspeakConfig.nickname,
       );
 
-      await Promise.all([this.teamspeak.registerEvent('server')]);
+      await Promise.all([
+        this.teamspeak.registerEvent('server'),
+        this.teamspeak.registerEvent('channel', '0'),
+      ]);
 
-      this.teamspeak.on('clientconnect', async (event) => {});
+      this.teamspeak.on('clientmoved', async () => {
+        await this.syncService.compareAllChannels();
+      });
+
+      this.teamspeak.on('clientconnect', async () => {
+        await this.syncService.compareAllChannels();
+      });
+
+      this.teamspeak.on('clientdisconnect', async () => {
+        await this.syncService.compareAllChannels();
+      });
     });
   }
 
@@ -95,10 +108,7 @@ export class TeamspeakService {
     }
   }
 
-  async getSubChannels(
-    getParentIdInput: GetParentIdInput,
-  ): Promise<TeamSpeakChannel[]> {
-    const { pid } = getParentIdInput;
+  async getSubChannels(pid: string): Promise<TeamSpeakChannel[]> {
     try {
       return this.teamspeak.channelList({ pid });
     } catch (e) {

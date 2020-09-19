@@ -50,7 +50,8 @@ export class TeamspeakController {
   subChannelList(
     @Param() getParentIdInput: GetParentIdInput,
   ): Promise<TeamSpeakChannel[]> {
-    return this.teamspeakService.getSubChannels(getParentIdInput);
+    const { pid } = getParentIdInput;
+    return this.teamspeakService.getSubChannels(pid);
   }
 
   @Get('channel/find/:cid')
