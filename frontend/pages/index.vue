@@ -32,43 +32,90 @@
                 <v-card-text>
                   <v-container>
                     <v-row>
-                      <v-col cols="12" sm="8">
+                      <v-col cols="12">
+                        <span>TeamSpeak Parent Channel</span>
+                        <v-select
+                          v-model.number="editedItem.parent"
+                          :items="teamspeakChannelsFixed"
+                          item-text="channelName"
+                          item-value="cid"
+                          single-line
+                          hint="Required"
+                          :persistent-hint="true"
+                          class="mt-0 pt-0"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" md="6">
                         <v-text-field
-                          v-model="editedItem.name"
-                          label="Assignment name"
+                          v-model.trim="editedItem.prefix"
+                          label="Channel Prefix"
+                          hint='e.g. "Channel"'
+                          :persistent-hint="true"
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12" sm="4">
-                        <v-checkbox
-                          v-model="editedItem.shield"
-                          label="Protected Usergroup?"
-                        ></v-checkbox>
+                      <v-col cols="12" md="6">
+                        <v-text-field
+                          v-model.trim="editedItem.topic"
+                          label="Channel Topic"
+                        ></v-text-field>
                       </v-col>
-                      <v-col cols="12" sm="6">
-                        <span>Discourse Group</span>
-                        <v-select
-                          v-model.number="editedItem.dcid"
-                          :items="discourseGroups"
-                          item-text="name"
-                          item-value="id"
-                          single-line
-                          class="mt-0 pt-0"
-                        ></v-select>
+                      <v-col cols="12" sm="12" md="12">
+                        <v-textarea
+                          v-model.trim="editedItem.description"
+                          label="The channel's description"
+                        ></v-textarea>
                       </v-col>
-                      <v-col cols="12" sm="6">
-                        <span>TeamSpeak Servergroup</span>
-                        <v-select
-                          v-model.number="editedItem.tsid"
+                      <v-col cols="12" sm="6" md="6">
+                        <v-text-field
+                          v-model.number="editedItem.min"
                           type="number"
-                          :items="teamspeakGroupsFixed"
-                          item-text="name"
-                          item-value="sgid"
-                          single-line
-                          class="mt-0 pt-0"
+                          label="Minimum channels to create"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-text-field
+                          v-model.number="editedItem.max"
+                          type="number"
+                          label="Maximum channels to create"
+                          hint="0 = unlimited"
+                          :persistent-hint="true"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="12" md="6">
+                        <v-select
+                          v-model="editedItem.codec"
+                          :items="codec"
+                          item-text="key"
+                          item-value="value"
+                          label="Audio codec"
                         ></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-text-field
+                          v-model.number="editedItem.joinPower"
+                          type="number"
+                          label="Required join power"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="12" md="12">
+                        <v-subheader>Voice Quality</v-subheader>
+                        <v-slider
+                          v-model.number="editedItem.quality"
+                          step="1"
+                          ticks="always"
+                          max="10"
+                          thumb-label
+                          tick-size="4"
+                        ></v-slider>
                       </v-col>
                     </v-row>
                   </v-container>
+                  <v-alert
+                    v-if="error"
+                    type="error"
+                    v-text="error.data.message"
+                  >
+                  </v-alert>
                 </v-card-text>
 
                 <v-card-actions>
@@ -108,12 +155,13 @@ export default {
   data() {
     return {
       dialog: false,
+      error: null,
       headers: [
         { text: 'ID', value: 'id' },
-        { text: 'Name', value: 'name' },
-        { text: 'Protected', value: 'shield', sortable: false },
-        { text: 'Discourse ID', value: 'dcid', sortable: false },
-        { text: 'TeamSpeak ID', value: 'tsid', sortable: false },
+        { text: 'Parent Channel', value: 'parent', sortable: true },
+        { text: 'Topic', value: 'topic', sortable: false },
+        { text: 'Min Channels', value: 'min', sortable: false },
+        { text: 'Max Channels', value: 'max', sortable: false },
         { text: 'Created At', value: 'createdAt', sortable: false },
         { text: 'Updated At', value: 'updatedAt', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false },
@@ -121,22 +169,39 @@ export default {
       editedIndex: -1,
       editedItem: {
         id: 0,
-        name: '',
-        shield: false,
-        dcid: 0,
-        tsid: 0,
+        topic: '',
+        description: '',
+        codec: '4',
+        min: 1,
+        max: 0,
+        joinPower: 0,
+        parent: 0,
+        prefix: '',
+        quality: 5,
       },
       defaultItem: {
-        name: '',
-        shield: false,
-        dcid: 0,
-        tsid: 0,
+        topic: '',
+        description: '',
+        codec: '4',
+        min: 1,
+        max: 0,
+        joinPower: 0,
+        parent: 0,
+        prefix: '',
+        quality: 5,
       },
-      discourseGroups: [],
-      teamspeakGroups: [],
-      teamspeakGroupsFixed: [],
+      teamspeakChannels: [],
+      teamspeakChannelsFixed: [],
       assignments: [],
       loading: true,
+      codec: [
+        { key: 'SPEEX_NARROWBAND', value: '0' },
+        { key: 'SPEEX_WIDEBAND', value: '1' },
+        { key: 'SPEEX_ULTRAWIDEBAND', value: '2' },
+        { key: 'CELT_MONO', value: '3' },
+        { key: 'OPUS_VOICE', value: '4' },
+        { key: 'OPUS_MUSIC', value: '5' },
+      ],
     }
   },
 
@@ -150,11 +215,13 @@ export default {
     dialog(val) {
       val || this.close()
     },
-    teamspeakGroups: {
+
+    teamspeakChannels: {
       handler(val) {
-        this.teamspeakGroupsFixed = val.map((sg) => ({
-          ...sg,
-          sgid: parseInt(sg.sgid, 10),
+        this.teamspeakChannelsFixed = val.map((channel) => ({
+          ...channel,
+          pid: parseInt(channel.pid, 10),
+          cid: parseInt(channel.cid, 10),
         }))
       },
       deep: true,
@@ -168,20 +235,12 @@ export default {
   methods: {
     async getData() {
       this.loading = true
-      await Promise.all([
-        this.getTeamSpeakGroups(),
-        this.getDiscourseGroups(),
-        this.getAssignments(),
-      ])
+      await Promise.all([this.getTeamSpeakChannels(), this.getAssignments()])
       this.loading = false
     },
 
-    async getTeamSpeakGroups() {
-      this.teamspeakGroups = await this.$axios.$get('teamspeak/servergrouplist')
-    },
-
-    async getDiscourseGroups() {
-      this.discourseGroups = await this.$axios.$get('discourse/groups')
+    async getTeamSpeakChannels() {
+      this.teamspeakChannels = await this.$axios.$get('teamspeak/channel')
     },
 
     async getAssignments() {
@@ -207,7 +266,7 @@ export default {
       const isConfirmed = confirm('Are you sure you want to delete this item?')
       if (isConfirmed) {
         try {
-          await this.$axios.delete(`/api/assignment/${id}`)
+          await this.$axios.delete(`assignment/${id}`)
         } catch (e) {
           this.error = e.response
           return
@@ -218,6 +277,7 @@ export default {
 
     close() {
       this.dialog = false
+      this.error = null
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
         this.editedIndex = -1
@@ -230,10 +290,12 @@ export default {
       if (this.editedIndex > -1) {
         // Update item
         try {
-          const response = await this.$axios.patch(
-            `/api/assignment/${id}`,
-            this.editedItem
-          )
+          const payload = {
+            ...this.editedItem,
+            codec: parseInt(this.editedItem.codec, 10),
+          }
+          const response = await this.$axios.patch(`assignment/${id}`, payload)
+          response.data.codec = '' + response.data.codec
           Object.assign(this.assignments[this.editedIndex], response.data)
         } catch (e) {
           this.error = e.response
@@ -242,10 +304,12 @@ export default {
       } else {
         // Create new item
         try {
-          const response = await this.$axios.post(
-            '/api/assignment',
-            this.editedItem
-          )
+          const payload = {
+            ...this.editedItem,
+            codec: parseInt(this.editedItem.codec, 10),
+          }
+          const response = await this.$axios.post('assignment', payload)
+          response.data.codec = '' + response.data.codec
           this.assignments.push(response.data)
         } catch (e) {
           this.error = e.response
