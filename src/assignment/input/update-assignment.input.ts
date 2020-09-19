@@ -28,7 +28,7 @@ export class UpdateAssignmentInput {
   min?: number;
 
   @IsNumber()
-  @Min(1)
+  @Min(0)
   @Max(99)
   @IsOptional()
   @ApiProperty({ required: false, minimum: 0, maximum: 99, default: 0 })
