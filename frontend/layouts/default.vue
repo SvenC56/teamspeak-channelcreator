@@ -25,7 +25,7 @@
         icon
         small
         target="_blank"
-        href="https://github.com/SvenC56/discourse-teamspeak-bridge"
+        href="https://github.com/SvenC56/teamspeak-channelcreator"
       >
         <v-icon>mdi-github</v-icon>
       </v-btn>
