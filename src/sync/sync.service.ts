@@ -66,11 +66,14 @@ export class SyncService {
         if (filteredChannels[filteredChannels.length - 1]) {
           const highestChannelNumber = this.getChannelNumber(filteredChannels);
           toCreate.push({
-            ...element,
+            assignment: element,
             channelName: `${element.prefix} ${highestChannelNumber + 1}`,
           });
         } else {
-          toCreate.push({ ...element, channelName: `${element.prefix} 1` });
+          toCreate.push({
+            assignment: element,
+            channelName: `${element.prefix} 1`,
+          });
         }
       } else {
         const markDelete = filteredChannels.filter((x) => x.totalClients === 0);
@@ -91,17 +94,17 @@ export class SyncService {
         try {
           const channelName = channel.channelName;
           const properties: ChannelEdit = {
-            cpid: '' + channel.parent,
-            channelCodec: channel.codec,
-            channelCodecQuality: channel.quality,
+            cpid: '' + channel.assignment.parent,
+            channelCodec: channel.assignment.codec,
+            channelCodecQuality: channel.assignment.quality,
             channelFlagPermanent: true,
-            channelTopic: channel.topic,
-            channelDescription: channel.description,
+            channelTopic: channel.assignment.topic,
+            channelDescription: channel.assignment.description,
           };
           const perms: Permission.PermType[] = [
             {
               permname: 'i_channel_needed_join_power',
-              permvalue: channel.joinPower,
+              permvalue: channel.assignment.joinPower,
             },
             { permname: 'i_channel_needed_modify_power', permvalue: 75 },
           ];
@@ -111,7 +114,7 @@ export class SyncService {
             perms,
           );
           this.logger.log(
-            `Create channel '${channel.channelName}' with Parent ID: ${channel.parent}`,
+            `Create channel '${channel.channelName}' with Parent ID: ${channel.assignment.parent}`,
           );
         } catch (error) {
           this.logger.error(error.message);
