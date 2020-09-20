@@ -53,8 +53,8 @@ export default {
     // Doc: https://github.com/nuxt-community/stylelint-module
     '@nuxtjs/stylelint-module',
     '@nuxtjs/vuetify',
-    // Doc: https://github.com/nuxt-community/moment-module#readme
-    '@nuxtjs/moment',
+    // Doc: https://github.com/nuxt-community/dayjs-module
+    '@nuxtjs/dayjs',
   ],
   /*
    ** Nuxt.js modules

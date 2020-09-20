@@ -151,6 +151,8 @@
 </template>
 
 <script>
+import relativeTime from 'dayjs/plugin/relativeTime'
+
 export default {
   data() {
     return {
@@ -229,6 +231,7 @@ export default {
   },
 
   async mounted() {
+    this.$dayjs.extend(relativeTime)
     await this.getData()
   },
 
@@ -248,9 +251,7 @@ export default {
     },
 
     getRelativeTimestamp(timestamp) {
-      return timestamp !== null
-        ? this.$moment(timestamp).startOf('minute').fromNow()
-        : ''
+      return timestamp !== null ? this.$dayjs(timestamp).fromNow() : ''
     },
 
     editItem(item) {
