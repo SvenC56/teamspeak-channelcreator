@@ -110,12 +110,15 @@
                       </v-col>
                     </v-row>
                   </v-container>
-                  <v-alert
-                    v-if="error"
-                    type="error"
-                    v-text="error.data.message"
-                  >
-                  </v-alert>
+                  <template v-if="error">
+                    <v-alert
+                      v-for="(item, index) of error"
+                      :key="index"
+                      type="error"
+                      v-text="item"
+                    >
+                    </v-alert>
+                  </template>
                 </v-card-text>
 
                 <v-card-actions>
@@ -299,7 +302,7 @@ export default {
           response.data.codec = '' + response.data.codec
           Object.assign(this.assignments[this.editedIndex], response.data)
         } catch (e) {
-          this.error = e.response
+          this.error = e.response.data.message
           return
         }
       } else {
@@ -313,7 +316,7 @@ export default {
           response.data.codec = '' + response.data.codec
           this.assignments.push(response.data)
         } catch (e) {
-          this.error = e.response
+          this.error = e.response.data.message
           return
         }
       }
