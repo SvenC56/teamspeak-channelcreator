@@ -12,22 +12,21 @@ import {
 import { Permission } from 'ts3-nodejs-library/lib/util/Permission';
 
 @Injectable()
-export class TeamspeakService {
+export class TeamspeakService extends TeamSpeak {
   private readonly logger = new Logger(TeamspeakService.name);
 
-  private teamspeak: TeamSpeak;
   constructor(
     private readonly teamspeakConfig: TeamspeakConfigService,
     @Inject(forwardRef(() => SyncService))
     private readonly syncService: SyncService,
   ) {
-    this.teamspeak = new TeamSpeak(teamspeakConfig.config);
+    super(teamspeakConfig.config);
 
-    this.teamspeak.on('close', async () => {
-      await this.teamspeak.reconnect(-1, 1000);
+    this.on('close', async () => {
+      await this.reconnect(-1, 1000);
     });
 
-    this.teamspeak.on('error', (e) => {
+    this.on('error', (e) => {
       switch (true) {
         case /^could not fetch client/.test(e.message): {
           this.logger.debug(e.message);
@@ -40,27 +39,27 @@ export class TeamspeakService {
       }
     });
 
-    this.teamspeak.on('ready', async () => {
+    this.on('ready', async () => {
       this.logger.log('Connected to TeamSpeak Server!');
-      await this.teamspeak.useByPort(
+      await this.useByPort(
         teamspeakConfig.serverPort,
         teamspeakConfig.nickname,
       );
 
       await Promise.all([
-        this.teamspeak.registerEvent('server'),
-        this.teamspeak.registerEvent('channel', '0'),
+        this.registerEvent('server'),
+        this.registerEvent('channel', '0'),
       ]);
 
-      this.teamspeak.on('clientmoved', async () => {
+      this.on('clientmoved', async () => {
         await this.syncService.compareAllChannels();
       });
 
-      this.teamspeak.on('clientconnect', async () => {
+      this.on('clientconnect', async () => {
         await this.syncService.compareAllChannels();
       });
 
-      this.teamspeak.on('clientdisconnect', async () => {
+      this.on('clientdisconnect', async () => {
         await this.syncService.compareAllChannels();
       });
     });
@@ -68,7 +67,7 @@ export class TeamspeakService {
 
   async getWhoami(): Promise<Whoami> {
     try {
-      return this.teamspeak.whoami();
+      return this.whoami();
     } catch (e) {
       this.logger.error(e.message);
     }
@@ -76,7 +75,7 @@ export class TeamspeakService {
 
   async getServerInfo(): Promise<ServerInfo> {
     try {
-      return this.teamspeak.serverInfo();
+      return this.serverInfo();
     } catch (e) {
       this.logger.error(e.message);
     }
@@ -84,7 +83,7 @@ export class TeamspeakService {
 
   async getInstanceInfo(): Promise<InstanceInfo> {
     try {
-      return this.teamspeak.instanceInfo();
+      return this.instanceInfo();
     } catch (e) {
       this.logger.error(e.message);
     }
@@ -92,7 +91,7 @@ export class TeamspeakService {
 
   async getChannels(): Promise<TeamSpeakChannel[]> {
     try {
-      return this.teamspeak.channelList();
+      return this.channelList();
     } catch (e) {
       this.logger.error(e.message);
     }
@@ -102,7 +101,7 @@ export class TeamspeakService {
     cid: TeamSpeakChannel.ChannelType,
   ): Promise<TeamSpeakChannel> {
     try {
-      return this.teamspeak.getChannelById(cid);
+      return this.getChannelById(cid);
     } catch (e) {
       this.logger.error(e.message);
     }
@@ -110,7 +109,7 @@ export class TeamspeakService {
 
   async getSubChannels(pid: string): Promise<TeamSpeakChannel[]> {
     try {
-      return this.teamspeak.channelList({ pid });
+      return this.channelList({ pid });
     } catch (e) {
       this.logger.error(e.message);
     }
@@ -122,7 +121,7 @@ export class TeamspeakService {
     perms?: Permission.PermType[],
   ): Promise<TeamSpeakChannel> {
     try {
-      const channel = await this.teamspeak.channelCreate(name, properties);
+      const channel = await this.channelCreate(name, properties);
       for (const perm of perms) {
         // TODO Set Permissions
         await channel.setPerm(perm);
@@ -138,15 +137,9 @@ export class TeamspeakService {
     force?: boolean,
   ): Promise<[]> {
     try {
-      return this.teamspeak.channelDelete(cid, force);
+      return this.channelDelete(cid, force);
     } catch (e) {
       this.logger.error(e.message);
-    }
-  }
-
-  private async asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-      await callback(array[index], index, array);
     }
   }
 }
